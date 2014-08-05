@@ -1,12 +1,16 @@
-Node/Express Template
-=====================
+Vending Machine
+===============
 
-MongoDB, Redis, Mailgun, Mocha Testing, Jade, Less, Foundation
---------------------------------------------------------------
+If only it were the real thing...
+---------------------------------
 
-[![Dependency Status](https://gemnasium.com/drewmoore/nodeTemplate.svg)](https://gemnasium.com/drewmoore/nodeTemplate)
-[![Coverage Status](https://coveralls.io/repos/drewmoore/nodeTemplate/badge.png)](https://coveralls.io/r/drewmoore/nodeTemplate)
-[![Build Status](https://travis-ci.org/drewmoore/nodeTemplate.svg?branch=master)](https://travis-ci.org/drewmoore/nodeTemplate)
+Deployment Instructions:
+------------------------
 
-Based on template used in Nashville Software School's 4th Cohort.  Basic CRUD app with unit and acceptance testing and unstyled views.
-Replace model, file, and object names such as SampleModel, sampleModels, sampleModel, whatever, etc. with your app's specific names and values.
+Run git clone https://github.com/drewmoore/vending
+If you don't already have Vagrant installed, Run sudo apt-get install vagrant (Requires VirtualBox).
+Run vagrant box add hashicorp/precise64 http://files.vagrantup.com/precise64.box
+Run vagrant up
+
+Vagrant's virtual box will download and install the necessary repositories and run the test suite.  When the Node server is running, load http://127.0.0.1:4567/
+into your browser.
