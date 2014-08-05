@@ -13,9 +13,19 @@ echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' | 
 sudo apt-get update
 sudo apt-get install -y mongodb-org
 
+sudo apt-get upgrade
+sudo apt-get install -y redis-server
+
 sudo service mongod start
+
+sudo service redis-server
+
 
 cd /vagrant
 sudo npm install
+sudo npm install -g mocha
+
+
+mocha test/ --recursive --reporter nyan
 
 DBNAME='vending' PORT=3000 node app/app.js
