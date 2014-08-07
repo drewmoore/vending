@@ -46,45 +46,101 @@ describe('Beverage', function(){
       });
     });
   });
-  describe('#addImage', function(){
-    it('should add an image', function(done){
+  describe('findByProductName', function(){
+    it('should find an array of all beverages with the same product name', function(done){
       var b1 = new Beverage('Cheerwine');
-      var oldname = __dirname + '/../fixtures/test-copy.jpg';
-      b1.addImage(oldname, function(){
-        expect(b1.image).to.equal('/img/beverages/' + b1.name + '.jpg');
-        done();
+      var b2 = new Beverage('Cheerwine');
+      var b3 = new Beverage('Jarritos Lime');
+      b1.insert(function(err, records){
+        b2.insert(function(err, records){
+          b3.insert(function(err, records){
+            Beverage.findByProductName('Cheerwine', function(err, records){
+              expect(records.length).to.equal(2);
+              expect(records[0].name).to.equal('Cheerwine');
+              done();
+            });
+          });
+        });
       });
     });
   });
-  /*
-  describe('findById', function(){
-    it('should find a Beverage by its Id', function(done){
-      var b1 = new Beverage({whatever: 'stuff'});
+  describe('countAll', function(){
+    it('should get a count of all beverages in the machine', function(done){
+      var b1 = new Beverage('Cheerwine');
+      var b2 = new Beverage('Cheerwine');
+      var b3 = new Beverage('Jarritos Lime');
       b1.insert(function(err, records){
-        var id = (b1._id).toString();
-        Beverage.findById(id, function(record){
-          expect(record._id).to.deep.equal(b1._id);
+        b2.insert(function(err, records){
+          b3.insert(function(err, records){
+            Beverage.countAll(function(err, count){
+              expect(count).to.equal(3);
+              done();
+            });
+          });
+        });
+      });
+    });
+  });
+  describe('countByProductName', function(){
+    it('should return a count of all beverages with the same product name', function(done){
+      var b1 = new Beverage('Cheerwine');
+      var b2 = new Beverage('Cheerwine');
+      var b3 = new Beverage('Jarritos Lime');
+      b1.insert(function(err, records){
+        b2.insert(function(err, records){
+          b3.insert(function(err, records){
+            Beverage.countByProductName('Cheerwine', function(err, count){
+              expect(count).to.equal(2);
+              done();
+            });
+          });
+        });
+      });
+    });
+  });
+  describe('stockNew', function(){
+    it('should add a specified number of beverages of a given product type to the machine', function(done){
+      Beverage.stockNew('Cheerwine', Beverage.quantityLimit, function(err, count){
+        Beverage.findByProductName('Cheerwine', function(err, records){
+          expect(records.length).to.equal(Beverage.quantityLimit);
+          done();
+        });
+      });
+    });
+    it('should not add any beverages above the specified limit', function(done){
+      Beverage.stockNew('Cheerwine', Beverage.quantityLimit + 1, function(stockError, count){
+        Beverage.findByProductName('Cheerwine', function(err, records){
+          expect(records.length).to.equal(0);
+          expect(typeof stockError).to.equal('string');
           done();
         });
       });
     });
   });
-  describe('findByUserId', function(){
-    it('should find a Beverage by its userId', function(done){
-      var u1 = new User({email:'test@nomail.com', name:'Test', password:'1234'});
-      u1.register(function(err, body){
-        var b1 = new Beverage({whatever: 'stuff'});
-        b1.addUser(u1._id);
-        b1.insert(function(err, records){
-          Beverage.findByUserId(u1._id.toString(), function(results){
-            expect(results.length).to.equal(1);
-            expect(results[0].whatever).to.equal('stuff');
+  describe('dispenseOneByType', function(){
+    it('should dispense a product, or remove an entry from the database by product name', function(done){
+      Beverage.stockNew('Cheerwine', 10, function(err, count){
+        Beverage.dispenseOneByType('Cheerwine', function(err, count){
+          Beverage.countByProductName('Cheerwine', function(err, count){
+            expect(count).to.equal(9);
+            done();
+          });
+        });
+      });
+    });
+    it('should not dispense a product if there are none left', function(done){
+      Beverage.stockNew('Cheerwine', 1, function(err, count){
+        Beverage.dispenseOneByType('Cheerwine', function(err, count){
+          Beverage.dispenseOneByType('Cheerwine', function(err, count){
+            expect(count).to.equal(0);
+            expect(typeof err).to.equal('string');
             done();
           });
         });
       });
     });
   });
+  /*
   describe('index', function(){
     it('should find and return all beverages', function(done){
       var b1 = new Beverage({whatever: 'stuff'});

@@ -2,7 +2,6 @@
 
 var Currency;
 var currencies = global.nss.db.collection('currencies');
-var Mongo = require('mongodb');
 var _ = require('lodash');
 
 module.exports = Currency;
@@ -11,13 +10,13 @@ function Currency(type){
   this.type = type;
   switch(type) {
     case 'nickel':
-      this.value = .05;
+      this.value = 0.05;
       break;
     case 'dime':
-      this.value = .10;
+      this.value = 0.10;
       break;
     case 'quarter':
-      this.value = .25;
+      this.value = 0.25;
       break;
     case 'dollarCoin':
       this.value = 1.00;

@@ -24,7 +24,7 @@ describe('Currency', function(){
       var c1 = new Currency('quarter');
       expect(c1).to.be.instanceof(Currency);
       expect(c1.type).to.equal('quarter');
-      expect(c1.value).to.equal(.25);
+      expect(c1.value).to.equal(0.25);
       done();
     });
   });
@@ -33,7 +33,7 @@ describe('Currency', function(){
       var c1 = new Currency('quarter');
       c1.insert(function(err, records){
         expect(c1._id).to.be.instanceof(Mongo.ObjectID);
-        expect(records[0].value).to.equal(.25);
+        expect(records[0].value).to.equal(0.25);
         done();
       });
     });
@@ -64,7 +64,7 @@ describe('Currency', function(){
         c2.insert(function(err, records){
           c3.insert(function(err, records){
             Currency.totalByType('quarter', function(err, total){
-              expect(total).to.equal(.50);
+              expect(total).to.equal(0.50);
               done();
             });
           });
@@ -127,7 +127,7 @@ describe('Currency', function(){
           c3.insert(function(err, records){
             Currency.emptyByType('quarter', function(err, count){
               Currency.totalAll(function(err, total){
-                expect(total).to.deep.equal(.05);
+                expect(total).to.deep.equal(0.05);
                 done();
               });
             });

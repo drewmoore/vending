@@ -2,26 +2,13 @@
 
 var Beverage;
 var beverages = global.nss.db.collection('beverages');
-var Mongo = require('mongodb');
-var path = require('path');
-var fs = require('fs');
+Beverage.quantityLimit = 30;
 
 module.exports = Beverage;
 
 function Beverage(name){
   this.name = name;
 }
-
-Beverage.index = function(fn){
-  beverages.find().toArray(function(err, records){
-    fn(records);
-  });
-};
-
-Beverage.prototype.addUser = function(userId){
-  var self = this;
-  self.userId = userId.toString();
-};
 
 Beverage.prototype.insert = function(fn){
   var self = this;
@@ -33,6 +20,65 @@ Beverage.prototype.insert = function(fn){
     } else {
       fn('That beverage is already in here, yo!');
     }
+  });
+};
+
+Beverage.findByProductName = function(name, fn){
+  beverages.find({name:name}).toArray(function(err, foundEntries){
+    fn(err, foundEntries);
+  });
+};
+
+Beverage.countAll = function(fn){
+  beverages.find().toArray(function(err, foundEntries){
+    fn(err, foundEntries.length);
+  });
+};
+
+Beverage.countByProductName = function(name, fn){
+  beverages.find({name:name}).toArray(function(err, foundEntries){
+    fn(err, foundEntries.length);
+  });
+};
+
+Beverage.stockNew = function(name, quantity, fn){
+  Beverage.findByProductName(name, function(err, foundEntries){
+    if((foundEntries.length + quantity) <= Beverage.quantityLimit){
+      var beveragesToStock = [];
+      for(var i=0; i<quantity; i++){
+        var b1 = new Beverage(name);
+        beveragesToStock.push(b1);
+      }
+      beverages.insert(beveragesToStock, function(err, records){
+        fn(err, records.length);
+      });
+    } else {
+      var spacesForNewBeverages = Beverage.quantityLimit - foundEntries.length;
+      var customError = 'You tried to add too many new beverages.  There are only ' + spacesForNewBeverages + ' slots left open.';
+      fn(customError, []);
+    }
+  });
+};
+
+Beverage.dispenseOneByType = function(name, fn){
+  Beverage.countByProductName(name, function(err, productCount){
+    if(productCount >= 1){
+      beverages.findOne({name:name}, function(err, record){
+        beverages.remove(record, function(err, count){
+          fn(err, productCount - 1);
+        });
+      });
+    } else {
+      err = 'There is no more ' + name + ' to dispense.';
+      fn(err, 0);
+    }
+  });
+};
+
+/*
+Beverage.index = function(fn){
+  beverages.find().toArray(function(err, records){
+    fn(records);
   });
 };
 Beverage.prototype.addImage = function(oldname, fn){
@@ -78,3 +124,4 @@ Beverage.destroy = function(id, fn){
     fn(err, count);
   });
 };
+*/
