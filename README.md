@@ -8,7 +8,7 @@ Deployment Instructions:
 ------------------------
 
 + Run git clone https://github.com/drewmoore/vending.
-+ If you don't already have Vagrant installed, Run sudo apt-get install vagrant (Requires VirtualBox).
++ If you don't already have Vagrant installed, run sudo apt-get install vagrant (Requires VirtualBox).
 + Run vagrant box add hashicorp/precise64 http://files.vagrantup.com/precise64.box.
 + Run vagrant up.
 
