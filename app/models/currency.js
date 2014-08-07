@@ -3,14 +3,30 @@
 var Currency;
 var currencies = global.nss.db.collection('currencies');
 var Mongo = require('mongodb');
+var _ = require('lodash');
 
 module.exports = Currency;
 
 function Currency(type){
   this.type = type;
   switch(type) {
+    case 'nickel':
+      this.value = .05;
+      break;
+    case 'dime':
+      this.value = .10;
+      break;
     case 'quarter':
       this.value = .25;
+      break;
+    case 'dollarCoin':
+      this.value = 1.00;
+      break;
+    case 'dollarBill':
+      this.value = 1.00;
+      break;
+    case 'fiveDollarBill':
+      this.value = 5.00;
       break;
   }
 }
@@ -22,65 +38,48 @@ Currency.prototype.insert = function(fn){
   });
 };
 
-/*
-SampleModel.index = function(fn){
-  sampleModels.find().toArray(function(err, records){
-    fn(records);
+Currency.countByType = function(type, fn){
+  currencies.find({type:type}).toArray(function(err, records){
+    fn(err, records.length);
   });
 };
 
-SampleModel.prototype.addUser = function(userId){
-  var self = this;
-  self.userId = userId.toString();
-};
-*/
-
-
-
-/*
-SampleModel.prototype.addImage = function(oldname, fn){
-  var self = this;
-  var extension = path.extname(oldname);
-  var sampleModelId = this._id.toString();
-  var absolutePath = __dirname + '/../static';
-  var sampleModelsPath = absolutePath + '/img/sampleModels';
-  var relativePath = '/img/sampleModels/' + sampleModelId + extension;
-  fs.mkdir(sampleModelsPath, function(){
-    fs.rename(oldname, absolutePath + relativePath, function(err){
-      self.image = relativePath;
-      fn(err);
+Currency.totalByType = function(type, fn){
+  currencies.find({type:type}).toArray(function(err, records){
+    var total = 0;
+    _.each(records, function(record){
+      total += record.value;
     });
-  });
-};
-SampleModel.findById = function(id, fn){
-  var mongoId = new Mongo.ObjectID(id);
-  sampleModels.findOne({_id:mongoId}, function(err, record){
-    fn(record);
+    fn(err, total);
   });
 };
 
-SampleModel.findByUserId = function(id, fn){
-  sampleModels.find({userId:id.toString()}).toArray(function(err, records){
-    fn(records);
-  });
-};
-
-SampleModel.prototype.update = function(fn){
-  var self = this;
-  sampleModels.update({_id:self._id}, self, function(err, count){
-    SampleModel.findById(self._id.toString(), function(record){
-      fn(record);
+Currency.dispenseOneByType = function(type, fn){
+  currencies.findOne({type:type}, function(err, record){
+    currencies.remove(record, function(err, count){
+      fn(err, count);
     });
   });
 };
 
-SampleModel.destroy = function(id, fn){
-  if((typeof id) === 'string'){
-    id = Mongo.ObjectID(id);
-  }
-  sampleModels.remove({_id:id}, function(err, count){
+Currency.totalAll = function(fn){
+  currencies.find().toArray(function(err, records){
+    var total = 0;
+    _.each(records, function(record){
+      total += record.value;
+    });
+    fn(err, total);
+  });
+};
+
+Currency.emptyByType = function(type, fn){
+  currencies.remove({type:type}, function(err, count){
     fn(err, count);
   });
 };
-*/
 
+Currency.emptyAll = function(fn){
+  currencies.remove(function(err, count){
+    fn(err, count);
+  });
+};

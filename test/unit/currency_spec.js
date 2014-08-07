@@ -14,7 +14,11 @@ describe('Currency', function(){
       done();
     });
   });
-
+  beforeEach(function(done){
+    global.nss.db.dropDatabase(function(err, result){
+      done();
+    });
+  });
   describe('new', function(){
     it('should create a new Currency object', function(done){
       var c1 = new Currency('quarter');
@@ -101,7 +105,7 @@ describe('Currency', function(){
             c4.insert(function(err, records2){
               c5.insert(function(err, records2){
                 c6.insert(function(err, records2){
-                  Currency.totalAll(function(total){
+                  Currency.totalAll(function(err, total){
                     expect(total).to.equal(7.40);
                     done();
                   });
