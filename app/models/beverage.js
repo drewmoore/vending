@@ -75,6 +75,12 @@ Beverage.dispenseOneByType = function(name, fn){
   });
 };
 
+Beverage.changeNames = function(oldName, newName, fn){
+  beverages.update({name:oldName}, {$set: {name: newName}}, {multi: true}, function(err, count){
+    fn(err, count);
+  });
+};
+
 /*
 Beverage.index = function(fn){
   beverages.find().toArray(function(err, records){

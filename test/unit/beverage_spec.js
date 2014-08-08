@@ -140,6 +140,26 @@ describe('Beverage', function(){
       });
     });
   });
+  describe('changeNames', function(done){
+    it('should change the names of all specified beverages in machine', function(done){
+      Beverage.stockNew('Cheerwine', 10, function(err, count){
+        Beverage.stockNew('Jarritos Lime', 10, function(err, count){
+          Beverage.changeNames('Cheerwine', 'RC Cola', function(err, records){
+            Beverage.findByProductName('Cheerwine', function(err, recordsOld){
+              Beverage.findByProductName('RC Cola', function(err, recordsNew){
+                Beverage.findByProductName('Jarritos Lime', function(err, recordsOther){
+                  expect(recordsOld.length).to.equal(0);
+                  expect(recordsNew.length).to.equal(10);
+                  expect(recordsOther.length).to.equal(10);
+                  done();
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+  });
   /*
   describe('index', function(){
     it('should find and return all beverages', function(done){

@@ -5,6 +5,7 @@ var expect = require('chai').expect;
 var fs = require('fs');
 var exec = require('child_process').exec;
 var Mongo = require('mongodb');
+var Beverage;
 var BeverageType;
 
 describe('BeverageType', function(){
@@ -12,6 +13,7 @@ describe('BeverageType', function(){
   before(function(done){
     var initMongo = require('../../app/lib/init-mongo');
     initMongo.db(function(){
+      Beverage = require('../../app/models/beverage');
       BeverageType = require('../../app/models/beverageType');
       done();
     });
@@ -45,6 +47,45 @@ describe('BeverageType', function(){
         done();
       });
     });
+    it('should not add a duplicate BeverageType record to the database', function(done){
+      var b1 = new BeverageType('Cheerwine');
+      var b2 = new BeverageType('Cheerwine');
+      b1.insert(function(err, records){
+        b2.insert(function(err, records){
+          expect(b2._id).to.be.undefined;
+          expect(records).to.be.undefined;
+          expect(typeof err).to.deep.equal('string');
+          done();
+        });
+      });
+    });
+    it('should not add too many BeverageTypes to the database, limited number of slots in machine', function(done){
+      var b1 = new BeverageType('Cheerwine');
+      var b2 = new BeverageType('Jarritos Lime');
+      var b3 = new BeverageType('Jarritos Tamarindo');
+      var b4 = new BeverageType('Jarritos Mandarin');
+      var b5 = new BeverageType('RC Cola');
+      var b6 = new BeverageType('Dr. Pepper');
+      var b7 = new BeverageType('Monster Juice');
+      b1.insert(function(err, records){
+        b2.insert(function(err, records){
+          b3.insert(function(err, records){
+            b4.insert(function(err, records){
+              b5.insert(function(err, records){
+                b6.insert(function(err, records6){
+                  b7.insert(function(err, records7){
+                    expect(records6[0].name).to.equal('Dr. Pepper');
+                    expect(records7).to.be.undefined;
+                    expect(typeof err).to.deep.equal('string');
+                    done();
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+    });
   });
   describe('findById', function(){
     it('should find a beverage type by its database id', function(done){
@@ -62,16 +103,13 @@ describe('BeverageType', function(){
   describe('findByProductName', function(){
     it('should find an array of all beverage types with the same product name', function(done){
       var b1 = new BeverageType('Cheerwine');
-      var b2 = new BeverageType('Cheerwine');
-      var b3 = new BeverageType('Jarritos Lime');
+      var b2 = new BeverageType('Jarritos Lime');
       b1.insert(function(err, records){
         b2.insert(function(err, records){
-          b3.insert(function(err, records){
-            BeverageType.findByProductName('Cheerwine', function(err, records){
-              expect(records.length).to.equal(2);
-              expect(records[0].name).to.equal('Cheerwine');
-              done();
-            });
+          BeverageType.findByProductName('Cheerwine', function(err, records){
+            expect(records.length).to.equal(1);
+            expect(records[0].name).to.equal('Cheerwine');
+            done();
           });
         });
       });
@@ -112,6 +150,32 @@ describe('BeverageType', function(){
           BeverageType.findById(id, function(err, record){
             expect(record.name).to.equal('RC Cola');
             done();
+          });
+        });
+      });
+    });
+    it('should change the name of all beverages in DB that are the same type as the BeverageType', function(done){
+      var bt1 = new BeverageType('Cheerwine');
+      var b1 = new Beverage('Cheerwine');
+      var b2 = new Beverage('Cheerwine');
+      var b3 = new Beverage('Jarritos Lime');
+      bt1.insert(function(err, records){
+        b1.insert(function(err, records){
+          b2.insert(function(err, records){
+            b3.insert(function(err, records){
+              bt1.changeName('RC Cola', function(err, result){
+                Beverage.findByProductName('Cheerwine', function(err, recordsOldName){
+                  Beverage.findByProductName('RC Cola', function(err, recordsNewName){
+                    Beverage.findByProductName('Jarritos Lime', function(err, recordsOtherName){
+                      expect(recordsOldName.length).to.equal(0);
+                      expect(recordsNewName.length).to.equal(2);
+                      expect(recordsOtherName.length).to.equal(1);
+                      done();
+                    });
+                  });
+                });
+              });
+            });
           });
         });
       });

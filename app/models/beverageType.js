@@ -5,6 +5,8 @@ var beverageTypes = global.nss.db.collection('beverageTypes');
 var Mongo = require('mongodb');
 var path = require('path');
 var fs = require('fs');
+var Beverage = require('./beverage');
+BeverageType.quantityLimit = 6;
 
 module.exports = BeverageType;
 
@@ -20,14 +22,22 @@ BeverageType.index = function(fn){
 
 BeverageType.prototype.insert = function(fn){
   var self = this;
-  beverageTypes.find({_id:self._id}).toArray(function(err, foundEntries){
-    if(foundEntries.length === 0){
-      beverageTypes.insert(self, function(err, records){
-        fn(err, records);
+  beverageTypes.find({_id:self._id}).toArray(function(err, foundEntriesById){
+    BeverageType.findByProductName(self.name, function(err, foundEntriesByName){
+      BeverageType.index(function(foundEntriesByIndex){
+        var shouldAdd = false;
+        if(foundEntriesById.length === 0 && foundEntriesByName.length === 0 && foundEntriesByIndex.length < BeverageType.quantityLimit){
+          shouldAdd = true;
+        }
+        if(shouldAdd){
+          beverageTypes.insert(self, function(err, records){
+            fn(err, records);
+          });
+        } else {
+          fn('That beverageType is already in here, yo!');
+        }
       });
-    } else {
-      fn('That beverageType is already in here, yo!');
-    }
+    });
   });
 };
 BeverageType.prototype.addImage = function(oldname, fn){
@@ -57,12 +67,15 @@ BeverageType.findByProductName = function(name, fn){
   });
 };
 
-BeverageType.prototype.changeName = function(name, fn){
+BeverageType.prototype.changeName = function(newName, fn){
   var self = this;
-  self.name = name;
+  var oldName = self.name;
+  self.name = newName;
   beverageTypes.update({_id:self._id}, self, function(err, count){
-    BeverageType.findById(self._id.toString(), function(err, record){
-      fn(err, record);
+    Beverage.changeNames(oldName, newName, function(err, count){
+      BeverageType.findById(self._id.toString(), function(err, record){
+        fn(err, record);
+      });
     });
   });
 };
