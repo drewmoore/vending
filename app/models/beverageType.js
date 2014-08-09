@@ -80,11 +80,10 @@ BeverageType.prototype.changeName = function(newName, fn){
   });
 };
 
-BeverageType.destroy = function(id, fn){
-  if((typeof id) === 'string'){
-    id = Mongo.ObjectID(id);
-  }
-  beverageTypes.remove({_id:id}, function(err, count){
-    fn(err, count);
+BeverageType.destroy = function(name, fn){
+  beverageTypes.remove({name:name}, function(err, beverageTypeCount){
+    Beverage.emptyByName(name, function(err, count){
+      fn(err, beverageTypeCount);
+    });
   });
 };

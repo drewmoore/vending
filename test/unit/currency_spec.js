@@ -90,6 +90,24 @@ describe('Currency', function(){
         });
       });
     });
+    it('should not subtract one coin or bill of a given denomination from the bank if there are already none left', function(done){
+      var c1 = new Currency('quarter');
+      var c2 = new Currency('dime');
+      c1.insert(function(err, records){
+        c2.insert(function(err, records){
+          Currency.dispenseOneByType('quarter', function(err, count){
+            Currency.dispenseOneByType('quarter', function(lastDispenseErr, lastDispenseCount){
+              Currency.countByType('quarter', function(err, count){
+                expect(count).to.equal(0);
+                expect(lastDispenseCount).to.equal(0);
+                expect(typeof lastDispenseErr).to.equal('string');
+                done();
+              });
+            });
+          });
+        });
+      });
+    });
   });
   describe('totalAll', function(){
     it('should find and return the total value of all currencies in the machine', function(done){

@@ -6,6 +6,7 @@ var fs = require('fs');
 var exec = require('child_process').exec;
 var Mongo = require('mongodb');
 var Beverage;
+var BeverageType;
 
 describe('Beverage', function(){
   this.timeout(10000);
@@ -13,6 +14,7 @@ describe('Beverage', function(){
     var initMongo = require('../../app/lib/init-mongo');
     initMongo.db(function(){
       Beverage = require('../../app/models/beverage');
+      BeverageType = require('../../app/models/beverageType');
       done();
     });
   });
@@ -160,48 +162,53 @@ describe('Beverage', function(){
       });
     });
   });
-  /*
-  describe('index', function(){
-    it('should find and return all beverages', function(done){
-      var b1 = new Beverage({whatever: 'stuff'});
-      var s2 = new Beverage({whatever: 'other stuff'});
-      b1.insert(function(err, records){
-        s2.insert(function(err, records2){
-          Beverage.index(function(records3){
-            expect(records3.length).to.equal(2);
-            done();
+  describe('emptyByName', function(){
+    it('should delete all entries for a beverage product from the DB', function(done){
+      var bt1 = new BeverageType('Cheerwine');
+      bt1.insert(function(err, records){
+        Beverage.stockNew('Cheerwine', 10, function(err, count){
+          Beverage.stockNew('Jarritos Lime', 10, function(err, count){
+            Beverage.emptyByName('Cheerwine', function(err, count){
+              Beverage.findByProductName('Cheerwine', function(err, beveragesRecord){
+                BeverageType.findByProductName('Cheerwine', function(err, beverageTypeRecords){
+                  expect(beveragesRecord.length).to.equal(0);
+                  expect(beverageTypeRecords[0].name).to.equal('Cheerwine');
+                  done();
+                });
+              });
+            });
           });
         });
       });
     });
   });
-  describe('#update', function(){
-    it('should update a Beverage info in the database', function(done){
-      var b1 = new Beverage({whatever: 'stuff'});
-      b1.insert(function(err, records){
-        b1.whatever = 'stuff changed';
-        b1.update(function(result){
-          var id = (b1._id).toString();
-          Beverage.findById(id, function(record){
-            expect(record.whatever).to.deep.equal(b1.whatever);
-            done();
+  describe('emptyAll', function(){
+    it('should delete all beverages from the machine, but retain the types, i.e. designated slots and labels', function(done){
+      var bt1 = new BeverageType('Cheerwine');
+      var b2 = new BeverageType('Jarritos Lime');
+      bt1.insert(function(err, records){
+        b2.insert(function(err, records){
+          Beverage.stockNew('Cheerwine', 10, function(err, count){
+            Beverage.stockNew('Jarritos Lime', 10, function(err, count){
+              Beverage.emptyAll(function(err, count){
+                Beverage.findByProductName('Cheerwine', function(err, beveragesRecord){
+                  Beverage.findByProductName('Jarritos Lime', function(err, beveragesRecord2){
+                    BeverageType.findByProductName('Cheerwine', function(err, beverageTypeRecords){
+                      BeverageType.findByProductName('Jarritos Lime', function(err, beverageTypeRecords2){
+                        expect(beveragesRecord.length).to.equal(0);
+                        expect(beveragesRecord2.length).to.equal(0);
+                        expect(beverageTypeRecords[0].name).to.equal('Cheerwine');
+                        expect(beverageTypeRecords2[0].name).to.equal('Jarritos Lime');
+                        done();
+                      });
+                    });
+                  });
+                });
+              });
+            });
           });
         });
       });
     });
   });
-  describe('destroy', function(){
-    it('should delete a Beverage from the DB', function(done){
-      var b1 = new Beverage({whatever: 'stuff'});
-      b1.insert(function(err, records){
-        Beverage.destroy(b1._id, function(err, count){
-          Beverage.findById(records[0]._id.toString(), function(record){
-            expect(record).to.deep.equal(null);
-            done();
-          });
-        });
-      });
-    });
-  });
-  */
 });

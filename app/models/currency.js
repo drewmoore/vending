@@ -54,10 +54,17 @@ Currency.totalByType = function(type, fn){
 };
 
 Currency.dispenseOneByType = function(type, fn){
-  currencies.findOne({type:type}, function(err, record){
-    currencies.remove(record, function(err, count){
+  Currency.countByType(type, function(err, count){
+    if(count >= 1){
+      currencies.findOne({type:type}, function(err, record){
+        currencies.remove(record, function(err, count){
+          fn(err, count);
+        });
+      });
+    } else {
+      err = 'Cannot dispense another ' + type + '. There are already none left in the machine.';
       fn(err, count);
-    });
+    }
   });
 };
 

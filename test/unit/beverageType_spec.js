@@ -181,15 +181,32 @@ describe('BeverageType', function(){
       });
     });
   });
+  describe('purchase', function(){
+    it('should carry out all the functions of purchasing a drink in regards to beverage and currency quantity', function(done){
+      expect(1).to.equal(0);
+      done();
+    });
+  });
   describe('destroy', function(){
-    it('should delete a BeverageType from the DB', function(done){
-      var b1 = new BeverageType('Cheerwine');
-      b1.insert(function(err, records){
-        var id = (b1._id).toString();
-        BeverageType.destroy(id, function(err, count){
-          BeverageType.findById(records[0]._id.toString(), function(record){
-            expect(record).to.deep.equal(null);
-            done();
+    it('should delete a BeverageType from the DB, as well as all associated beverages', function(done){
+      var bt1 = new BeverageType('Cheerwine');
+      var b1 = new Beverage('Cheerwine');
+      var b2 = new Beverage('Cheerwine');
+      var b3 = new Beverage('Jarritos Lime');
+      bt1.insert(function(err, records){
+        b1.insert(function(err, records){
+          b2.insert(function(err, records){
+            b3.insert(function(err, records){
+              BeverageType.destroy(bt1.name, function(err, count){
+                BeverageType.findById(records[0]._id.toString(), function(beverageTypeRecord){
+                  Beverage.findByProductName('Cheerwine', function(err, beveragesRecords){
+                    expect(beverageTypeRecord).to.deep.equal(null);
+                    expect(beveragesRecords.length).to.equal(0);
+                    done();
+                  });
+                });
+              });
+            });
           });
         });
       });
