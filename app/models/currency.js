@@ -4,6 +4,8 @@ var Currency;
 var currencies = global.nss.db.collection('currencies');
 var _ = require('lodash');
 
+Currency.paperBillsAccepted = ['dollarBill', 'fiveDollarBill'];
+
 module.exports = Currency;
 
 function Currency(type){
@@ -50,6 +52,75 @@ Currency.totalByType = function(type, fn){
       total += record.value;
     });
     fn(err, total);
+  });
+};
+
+Currency.quantityLimit = function(type){
+  var quantityLimit;
+  var nickelLimit = 80;
+  var dimeLimit = 100;
+  var quarterLimit = 80;
+  var dollarCoinLimit = 50;
+  var paperBillLimit = 100;
+
+  var isPaper = false;
+  _.each(Currency.paperBillsAccepted, function(bill){
+    if(bill === type){
+      isPaper = true;
+    }
+  });
+  if(isPaper){
+    var totalBillsInMachine = 0;
+    _.each(Currency.paperBillsAccepted, function(bill){
+      Currency.countByType(bill, function(err, count){
+        totalBillsInMachine += count;
+
+        console.log('QUANTITY LIMIT: ITS PAPER: GETTING TOTAL BILLS IN MACHINE:  ', type, bill, err, count, totalBillsInMachine);
+
+      });
+    });
+    quantityLimit = paperBillLimit - totalBillsInMachine;
+    return quantityLimit;
+  } else {
+
+    console.log('QUANTITY LIMIT: ITS NOT PAPER: ', type);
+
+    switch(type) {
+      case 'nickel':
+        quantityLimit = nickelLimit;
+        break;
+      case 'dime':
+        quantityLimit = dimeLimit;
+        break;
+      case 'quarter':
+        quantityLimit = quarterLimit;
+        break;
+      case 'dollarCoin':
+        quantityLimit = dollarCoinLimit;
+        break;
+    }
+    return quantityLimit;
+  }
+};
+
+Currency.stockNewByType = function(type, quantity, fn){
+  Currency.countByType(type, function(err, count){
+    if(quantity <= Currency.quantityLimit(type)){
+
+      console.log('STOCK NEW BY TYPE QUANTITY LESS THAN QUANTITY LIMIT: ', type, quantity, Currency.quantityLimit(type));
+
+      var currenciesToStock = [];
+      for(var i=0; i<quantity; i++){
+        var c1 = new Currency(type);
+        currenciesToStock.push(c1);
+      }
+      currencies.insert(currenciesToStock, function(err, records){
+        fn(err, records.length);
+      });
+    } else {
+      var customError = 'You tried to add too many new coins/bills.';
+      fn(customError, 0);
+    }
   });
 };
 

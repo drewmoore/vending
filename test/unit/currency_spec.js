@@ -3,6 +3,7 @@
 process.env.DBNAME = 'vending-test';
 var expect = require('chai').expect;
 var Mongo = require('mongodb');
+var _ = require('lodash');
 var Currency;
 
 describe('Currency', function(){
@@ -126,6 +127,118 @@ describe('Currency', function(){
                   Currency.totalAll(function(err, total){
                     expect(total).to.equal(7.40);
                     done();
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+  describe('quantityLimit', function(){
+    it('should return the specified limit for a given coin/bill denomination', function(done){
+      var denominations = ['nickel', 'dime', 'quarter', 'dollarCoin', 'dollarBill', 'fiveDollarBill'];
+      _.each(denominations, function(denomination){
+        expect(typeof Currency.quantityLimit(denomination)).to.equal('number');
+      });
+      done();
+    });
+  });
+  describe('stockNewByType', function(){
+    it('should add a specified number of coins/bills of a given denomination to the machine', function(done){
+      var nickelLimit = Currency.quantityLimit('nickel');
+      var dimeLimit = Currency.quantityLimit('dime');
+      var quarterLimit = Currency.quantityLimit('quarter');
+      var dollarCoinLimit = Currency.quantityLimit('dollarCoin');
+      var dollarBillLimit = Currency.quantityLimit('dollarBill') / 2;
+      var fiveDollarBillLimit = Currency.quantityLimit('fiveDollarBill') / 2;
+      Currency.stockNewByType('nickel', nickelLimit, function(err, nickelCountReturn){
+        Currency.stockNewByType('dime', dimeLimit, function(err, dimeCountReturn){
+          Currency.stockNewByType('quarter', quarterLimit, function(err, quarterCountReturn){
+            Currency.stockNewByType('dollarCoin', dollarCoinLimit, function(err, dollarCoinCountReturn){
+              Currency.stockNewByType('dollarBill', dollarBillLimit, function(err, dollarBillCountReturn){
+                Currency.stockNewByType('fiveDollarBill', fiveDollarBillLimit, function(err, fiveDollarBillCountReturn){
+                  Currency.countByType('nickel', function(err, nickelCount){
+                    Currency.countByType('dime', function(err, dimeCount){
+                      Currency.countByType('quarter', function(err, quarterCount){
+                        Currency.countByType('dollarCoin', function(err, dollarCoinCount){
+                          Currency.countByType('dollarBill', function(err, dollarBillCount){
+                            Currency.countByType('fiveDollarBill', function(err, fiveDollarBillCount){
+                              expect(nickelCountReturn).to.equal(nickelLimit);
+                              expect(nickelCount).to.equal(nickelLimit);
+                              expect(dimeCountReturn).to.equal(dimeLimit);
+                              expect(dimeCount).to.equal(dimeLimit);
+                              expect(quarterCountReturn).to.equal(quarterLimit);
+                              expect(quarterCount).to.equal(quarterLimit);
+                              expect(dollarCoinCountReturn).to.equal(dollarCoinLimit);
+                              expect(dollarCoinCount).to.equal(dollarCoinLimit);
+                              expect(dollarBillCountReturn).to.equal(dollarBillLimit);
+                              expect(dollarBillCount).to.equal(dollarBillLimit);
+                              expect(fiveDollarBillCount).to.equal(fiveDollarBillLimit);
+                              expect(fiveDollarBillCountReturn).to.equal(fiveDollarBillLimit);
+                              done();
+                            });
+                          });
+                        });
+                      });
+                    });
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+    it('should not add more coins/bills than the specified limit per denomination', function(done){
+      var nickelOverLimit = Currency.quantityLimit('nickel') + 1;
+      var dimeOverLimit = Currency.quantityLimit('dime') + 1;
+      var quarterOverLimit = Currency.quantityLimit('quarter') + 1;
+      var dollarCoinOverLimit = Currency.quantityLimit('dollarCoin') + 1;
+      var dollarBillLimit = Currency.quantityLimit('dollarBill');
+      var dollarBillOverLimit = (Currency.quantityLimit('dollarBill') / 2) + 1;
+      var fiveDollarBillOverLimit = (Currency.quantityLimit('fiveDollarBill') / 2) + 1;
+      Currency.stockNewByType('nickel', nickelOverLimit, function(nickelErr, nickelCountReturn){
+        Currency.stockNewByType('dime', dimeOverLimit, function(dimeErr, dimeCountReturn){
+          Currency.stockNewByType('quarter', quarterOverLimit, function(quarterErr, quarterCountReturn){
+            Currency.stockNewByType('dollarCoin', dollarCoinOverLimit, function(dollarCoinErr, dollarCoinCountReturn){
+              Currency.stockNewByType('dollarBill', dollarBillLimit, function(dollarBillInitialErr, dollarBillInitialCountReturn){
+                Currency.stockNewByType('dollarBill', dollarBillOverLimit, function(dollarBillErr, dollarBillCountReturn){
+                  Currency.stockNewByType('fiveDollarBill', fiveDollarBillOverLimit, function(fiveDollarBillErr, fiveDollarBillCountReturn){
+                    Currency.countByType('nickel', function(err, nickelCount){
+                      Currency.countByType('dime', function(err, dimeCount){
+                        Currency.countByType('quarter', function(err, quarterCount){
+                          Currency.countByType('dollarCoin', function(err, dollarCoinCount){
+                            Currency.countByType('dollarBill', function(err, dollarBillCount){
+                              Currency.countByType('fiveDollarBill', function(err, fiveDollarBillCount){
+                                expect(nickelCountReturn).to.equal(0);
+                                expect(nickelCount).to.equal(0);
+                                expect(typeof nickelErr).to.equal('string');
+                                expect(dimeCountReturn).to.equal(0);
+                                expect(dimeCount).to.equal(0);
+                                expect(typeof dimeErr).to.equal('string');
+                                expect(quarterCountReturn).to.equal(0);
+                                expect(quarterCount).to.equal(0);
+                                expect(typeof quarterErr).to.equal('string');
+                                expect(dollarCoinCountReturn).to.equal(0);
+                                expect(dollarCoinCount).to.equal(0);
+                                expect(typeof dollarCoinErr).to.equal('string');
+                                expect(dollarBillInitialCountReturn).to.equal(dollarBillLimit);
+                                expect(dollarBillCount).to.equal(dollarBillLimit);
+                                expect(typeof dollarBillInitialErr).to.equal(null);
+                                expect(dollarBillCountReturn).to.equal(0);
+                                expect(typeof dollarBillErr).to.equal('string');
+                                expect(fiveDollarBillCount).to.equal(0);
+                                expect(fiveDollarBillCountReturn).to.equal(0);
+                                expect(typeof fiveDollarBillErr).to.equal('string');
+                                done();
+                              });
+                            });
+                          });
+                        });
+                      });
+                    });
                   });
                 });
               });
