@@ -4,7 +4,13 @@ var Currency;
 var currencies = global.nss.db.collection('currencies');
 var _ = require('lodash');
 
+Currency.nickelLimit = 80;
+Currency.dimeLimit = 100;
+Currency.quarterLimit = 80;
+Currency.dollarCoinLimit = 50;
+Currency.paperBillLimit = 100;
 Currency.paperBillsAccepted = ['dollarBill', 'fiveDollarBill'];
+
 
 module.exports = Currency;
 
@@ -55,6 +61,48 @@ Currency.totalByType = function(type, fn){
   });
 };
 
+Currency.slotsLeftByType = function(type, fn){
+  var slotsLeft;
+  var isPaper;
+  var upperLimit;
+  _.each(Currency.paperBillsAccepted, function(billType){
+    if(billType === type){
+      isPaper = true;
+    }
+  });
+  if(isPaper){
+    slotsLeft = Currency.paperBillLimit;
+    // Can use asyncJS for an each loop to avoid hardcoding.
+    Currency.countByType(Currency.paperBillsAccepted[0], function(err, count){
+      slotsLeft -= count;
+      Currency.countByType(Currency.paperBillsAccepted[1], function(err, count){
+        slotsLeft -= count;
+        fn(slotsLeft);
+      });
+    });
+  } else {
+    switch(type) {
+      case 'nickel':
+        upperLimit = Currency.nickelLimit;
+        break;
+      case 'dime':
+        upperLimit = Currency.dimeLimit;
+        break;
+      case 'quarter':
+        upperLimit = Currency.quarterLimit;
+        break;
+      case 'dollarCoin':
+        upperLimit = Currency.dollarCoinLimit;
+        break;
+    }
+    Currency.countByType(type, function(err, count){
+      slotsLeft = upperLimit - count;
+      fn(slotsLeft);
+    });
+  }
+};
+
+/*
 Currency.quantityLimit = function(type){
   var quantityLimit;
   var nickelLimit = 80;
@@ -123,6 +171,7 @@ Currency.stockNewByType = function(type, quantity, fn){
     }
   });
 };
+*/
 
 Currency.dispenseOneByType = function(type, fn){
   Currency.countByType(type, function(err, count){

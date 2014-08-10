@@ -136,6 +136,51 @@ describe('Currency', function(){
       });
     });
   });
+  describe('slotsLeftByType', function(){
+    it('should return the amount of space left in the machine for a given denomination', function(done){
+      var c1 = new Currency('nickel');
+      var c2 = new Currency('dime');
+      var c3 = new Currency('quarter');
+      var c32 = new Currency('quarter');
+      var c4 = new Currency('dollarCoin');
+      var c5 = new Currency('dollarBill');
+      var c6 = new Currency('fiveDollarBill');
+      c1.insert(function(err, records){
+        c2.insert(function(err, records2){
+          c3.insert(function(err, records2){
+            c32.insert(function(err, records2){
+              c4.insert(function(err, records2){
+                c5.insert(function(err, records2){
+                  c6.insert(function(err, records2){
+                    Currency.slotsLeftByType('nickel', function(nickelCount){
+                      Currency.slotsLeftByType('dime', function(dimeCount){
+                        Currency.slotsLeftByType('quarter', function(quarterCount){
+                          Currency.slotsLeftByType('dollarCoin', function(dollarCoinCount){
+                            Currency.slotsLeftByType('dollarBill', function(dollarBillCount){
+                              Currency.slotsLeftByType('fiveDollarBill', function(fiveDollarBillCount){
+                                expect(nickelCount).to.equal(Currency.nickelLimit - 1);
+                                expect(dimeCount).to.equal(Currency.dimeLimit - 1);
+                                expect(quarterCount).to.equal(Currency.quarterLimit - 2);
+                                expect(dollarCoinCount).to.equal(Currency.dollarCoinLimit - 1);
+                                expect(dollarBillCount).to.equal(Currency.paperBillLimit - 2);
+                                expect(fiveDollarBillCount).to.equal(Currency.paperBillLimit - 2);
+                                done();
+                              });
+                            });
+                          });
+                        });
+                      });
+                    });
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+  /*
   describe('quantityLimit', function(){
     it('should return the specified limit for a given coin/bill denomination', function(done){
       var denominations = ['nickel', 'dime', 'quarter', 'dollarCoin', 'dollarBill', 'fiveDollarBill'];
@@ -248,6 +293,7 @@ describe('Currency', function(){
       });
     });
   });
+  */
   describe('emptyByType', function(){
     it('should delete all Currencies of a given denomination from the DB', function(done){
       var c1 = new Currency('quarter');
