@@ -60,6 +60,7 @@ Currency.totalByType = function(type, fn){
     var total = 0;
     _.each(records, function(record){
       total += record.value;
+      total = (Math.ceil((total * 100)) / 100);
     });
     fn(err, total);
   });
@@ -162,6 +163,23 @@ Currency.totalAll = function(fn){
     } else {
       fn(err, 0);
     }
+  });
+};
+
+Currency.totalChange = function(fn){
+  Currency.totalAll(function(err, total){
+    var bills = Currency.paperBillsAccepted;
+    var iterator = 0;
+    _.each(bills, function(bill){
+      Currency.totalByType(bill, function(err, paperAmount){
+        total = (total - paperAmount).toFixed(2);
+        iterator ++;
+        if(iterator === bills.length){
+          total = (Math.ceil((total * 100)) / 100);
+          fn(err, total);
+        }
+      });
+    });
   });
 };
 

@@ -128,6 +128,24 @@ describe('Currency', function(){
       });
     });
   });
+  describe('totalChange', function(){
+    it('should find and return the total value of all coins for making change', function(done){
+      var types = Currency.denominationsAccepted;
+      var iteration = 0;
+      _.each(types, function(type){
+        var c = new Currency(type);
+        c.insert(function(err, records){
+          iteration ++;
+          if(iteration === types.length){
+            Currency.totalChange(function(err, total){
+              expect(total).to.equal(1.40);
+              done();
+            });
+          }
+        });
+      });
+    });
+  });
   describe('slotsLeftByType', function(){
     it('should return the amount of space left in the machine for a given denomination', function(done){
       var iteration = 0;
@@ -308,12 +326,6 @@ describe('Currency', function(){
       expect(Currency.isPaper('dollarCoin')).to.equal(false);
       expect(Currency.isPaper('dollarBill')).to.equal(true);
       expect(Currency.isPaper('fiveDollarBill')).to.equal(true);
-      done();
-    });
-  });
-  describe('#canMakeChange', function(){
-    it('should determine whether or not there is sufficient change for all accepted currency denominations.', function(done){
-      expect('rock').to.equal('roll');
       done();
     });
   });

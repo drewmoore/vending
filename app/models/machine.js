@@ -5,6 +5,8 @@ var machines = global.nss.db.collection('machines');
 var Mongo = require('mongodb');
 var path = require('path');
 var fs = require('fs');
+var _ = require('lodash');
+var Currency = require('./currency');
 
 module.exports = Machine;
 
@@ -78,3 +80,37 @@ Machine.destroy = function(id, fn){
     fn(err, count);
   });
 };
+
+Machine.prototype.canMakeChange = function(fn){
+  var hasChange;
+  var price = this.price;
+  var highestCurrencyValue = 0;
+  var types = Currency.denominationsAccepted;
+  _.each(types, function(type){
+    var c = new Currency(type);
+    if(c.value > highestCurrencyValue){
+      highestCurrencyValue = c.value;
+    }
+  });
+  var changeNeeded = highestCurrencyValue - price;
+  Currency.totalChange(function(err, totalChange){
+    if(totalChange >= changeNeeded){
+      hasChange = true;
+    } else {
+      hasChange = false;
+    }
+    fn(hasChange);
+  });
+};
+
+
+
+
+
+
+
+
+
+
+
+

@@ -6,6 +6,7 @@ var fs = require('fs');
 var exec = require('child_process').exec;
 var Mongo = require('mongodb');
 var Machine;
+var Currency;
 
 describe('Machine', function(){
   this.timeout(10000);
@@ -13,6 +14,7 @@ describe('Machine', function(){
     var initMongo = require('../../app/lib/init-mongo');
     initMongo.db(function(){
       Machine = require('../../app/models/machine');
+      Currency = require('../../app/models/currency');
       done();
     });
   });
@@ -79,6 +81,22 @@ describe('Machine', function(){
           Machine.findById(records[0]._id.toString(), function(record){
             expect(record).to.deep.equal(null);
             done();
+          });
+        });
+      });
+    });
+  });
+  describe('#canMakeChange', function(){
+    it('should determine whether or not there is sufficient change for the highest accepted currency denomination.', function(done){
+      var m1 = new Machine(0.75);
+      Currency.stockNewByType('quarter', 17, function(err, count){
+        m1.canMakeChange(function(hasChange){
+          expect(hasChange).to.equal(true);
+          Currency.dispenseOneByType('quarter', function(err, count){
+            m1.canMakeChange(function(hasChange){
+              expect(hasChange).to.equal(false);
+              done();
+            });
           });
         });
       });
