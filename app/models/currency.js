@@ -72,12 +72,15 @@ Currency.slotsLeftByType = function(type, fn){
   });
   if(isPaper){
     slotsLeft = Currency.paperBillLimit;
-    // Can use asyncJS for an each loop to avoid hardcoding.
-    Currency.countByType(Currency.paperBillsAccepted[0], function(err, count){
-      slotsLeft -= count;
-      Currency.countByType(Currency.paperBillsAccepted[1], function(err, count){
+    var bills = Currency.paperBillsAccepted;
+    var iteration = 0;
+    _.each(bills, function(bill){
+      Currency.countByType(bill, function(err, count){
         slotsLeft -= count;
-        fn(slotsLeft);
+        iteration ++;
+        if(iteration === Currency.paperBillsAccepted.length){
+          fn(slotsLeft);
+        }
       });
     });
   } else {
@@ -102,61 +105,9 @@ Currency.slotsLeftByType = function(type, fn){
   }
 };
 
-/*
-Currency.quantityLimit = function(type){
-  var quantityLimit;
-  var nickelLimit = 80;
-  var dimeLimit = 100;
-  var quarterLimit = 80;
-  var dollarCoinLimit = 50;
-  var paperBillLimit = 100;
-
-  var isPaper = false;
-  _.each(Currency.paperBillsAccepted, function(bill){
-    if(bill === type){
-      isPaper = true;
-    }
-  });
-  if(isPaper){
-    var totalBillsInMachine = 0;
-    _.each(Currency.paperBillsAccepted, function(bill){
-      Currency.countByType(bill, function(err, count){
-        totalBillsInMachine += count;
-
-        console.log('QUANTITY LIMIT: ITS PAPER: GETTING TOTAL BILLS IN MACHINE:  ', type, bill, err, count, totalBillsInMachine);
-
-      });
-    });
-    quantityLimit = paperBillLimit - totalBillsInMachine;
-    return quantityLimit;
-  } else {
-
-    console.log('QUANTITY LIMIT: ITS NOT PAPER: ', type);
-
-    switch(type) {
-      case 'nickel':
-        quantityLimit = nickelLimit;
-        break;
-      case 'dime':
-        quantityLimit = dimeLimit;
-        break;
-      case 'quarter':
-        quantityLimit = quarterLimit;
-        break;
-      case 'dollarCoin':
-        quantityLimit = dollarCoinLimit;
-        break;
-    }
-    return quantityLimit;
-  }
-};
-
 Currency.stockNewByType = function(type, quantity, fn){
-  Currency.countByType(type, function(err, count){
-    if(quantity <= Currency.quantityLimit(type)){
-
-      console.log('STOCK NEW BY TYPE QUANTITY LESS THAN QUANTITY LIMIT: ', type, quantity, Currency.quantityLimit(type));
-
+  Currency.slotsLeftByType(type, function(quantityLimit){
+    if(quantity <= quantityLimit){
       var currenciesToStock = [];
       for(var i=0; i<quantity; i++){
         var c1 = new Currency(type);
@@ -166,12 +117,11 @@ Currency.stockNewByType = function(type, quantity, fn){
         fn(err, records.length);
       });
     } else {
-      var customError = 'You tried to add too many new coins/bills.';
-      fn(customError, 0);
+      var customErr = 'You have tried to overstock the machine. There are only ' + quantityLimit + ' slots left open for ' + type + '.';
+      fn(customErr, 0);
     }
   });
 };
-*/
 
 Currency.dispenseOneByType = function(type, fn){
   Currency.countByType(type, function(err, count){
