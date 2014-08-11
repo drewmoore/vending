@@ -112,70 +112,57 @@ describe('Currency', function(){
   });
   describe('totalAll', function(){
     it('should find and return the total value of all currencies in the machine', function(done){
-      var c1 = new Currency('nickel');
-      var c2 = new Currency('dime');
-      var c3 = new Currency('quarter');
-      var c4 = new Currency('dollarCoin');
-      var c5 = new Currency('dollarBill');
-      var c6 = new Currency('fiveDollarBill');
-      c1.insert(function(err, records){
-        c2.insert(function(err, records2){
-          c3.insert(function(err, records2){
-            c4.insert(function(err, records2){
-              c5.insert(function(err, records2){
-                c6.insert(function(err, records2){
-                  Currency.totalAll(function(err, total){
-                    expect(total).to.equal(7.40);
-                    done();
-                  });
-                });
-              });
+      var types = Currency.denominationsAccepted;
+      var iteration = 0;
+      _.each(types, function(type){
+        var c = new Currency(type);
+        c.insert(function(err, records){
+          iteration ++;
+          if(iteration === types.length){
+            Currency.totalAll(function(err, total){
+              expect(total).to.equal(7.40);
+              done();
             });
-          });
+          }
         });
       });
     });
   });
   describe('slotsLeftByType', function(){
     it('should return the amount of space left in the machine for a given denomination', function(done){
-      var c1 = new Currency('nickel');
-      var c2 = new Currency('dime');
-      var c3 = new Currency('quarter');
-      var c32 = new Currency('quarter');
-      var c4 = new Currency('dollarCoin');
-      var c5 = new Currency('dollarBill');
-      var c6 = new Currency('fiveDollarBill');
-      c1.insert(function(err, records){
-        c2.insert(function(err, records2){
-          c3.insert(function(err, records2){
-            c32.insert(function(err, records2){
-              c4.insert(function(err, records2){
-                c5.insert(function(err, records2){
-                  c6.insert(function(err, records2){
-                    Currency.slotsLeftByType('nickel', function(nickelCount){
-                      Currency.slotsLeftByType('dime', function(dimeCount){
-                        Currency.slotsLeftByType('quarter', function(quarterCount){
-                          Currency.slotsLeftByType('dollarCoin', function(dollarCoinCount){
-                            Currency.slotsLeftByType('dollarBill', function(dollarBillCount){
-                              Currency.slotsLeftByType('fiveDollarBill', function(fiveDollarBillCount){
-                                expect(nickelCount).to.equal(Currency.nickelLimit - 1);
-                                expect(dimeCount).to.equal(Currency.dimeLimit - 1);
-                                expect(quarterCount).to.equal(Currency.quarterLimit - 2);
-                                expect(dollarCoinCount).to.equal(Currency.dollarCoinLimit - 1);
-                                expect(dollarBillCount).to.equal(Currency.paperBillLimit - 2);
-                                expect(fiveDollarBillCount).to.equal(Currency.paperBillLimit - 2);
-                                done();
-                              });
-                            });
-                          });
-                        });
-                      });
-                    });
+      var iteration = 0;
+      var types = Currency.denominationsAccepted;
+
+      _.each(types, function(type){
+        var c = new Currency(type);
+        c.insert(function(err, records){
+          iteration ++;
+          if(iteration === types.length){
+            iteration = 0;
+
+            var currencyCount = {};
+            _.each(types, function(type){
+              Currency.slotsLeftByType(type, function(count){
+                currencyCount[type] = count;
+                iteration ++;
+                if(iteration === types.length){
+                  iteration = 0;
+
+                  _.each(types, function(type){
+                    if(Currency.isPaper(type)){
+                      expect(currencyCount[type]).to.equal(Currency.limit.paperBill - 2);
+                    } else {
+                      expect(currencyCount[type]).to.equal(Currency.limit[type] - 1);
+                    }
+                    iteration ++;
+                    if(iteration === types.length){
+                      done();
+                    }
                   });
-                });
+                }
               });
             });
-          });
+          }
         });
       });
     });
@@ -311,6 +298,23 @@ describe('Currency', function(){
           });
         });
       });
+    });
+  });
+  describe('isPaper', function(){
+    it('should determine if a given currency denomination is a paper bill, therefore having differing requirements and uses', function(done){
+      expect(Currency.isPaper('nickel')).to.equal(false);
+      expect(Currency.isPaper('dime')).to.equal(false);
+      expect(Currency.isPaper('quarter')).to.equal(false);
+      expect(Currency.isPaper('dollarCoin')).to.equal(false);
+      expect(Currency.isPaper('dollarBill')).to.equal(true);
+      expect(Currency.isPaper('fiveDollarBill')).to.equal(true);
+      done();
+    });
+  });
+  describe('#canMakeChange', function(){
+    it('should determine whether or not there is sufficient change for all accepted currency denominations.', function(done){
+      expect('rock').to.equal('roll');
+      done();
     });
   });
 });

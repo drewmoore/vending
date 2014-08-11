@@ -4,13 +4,17 @@ var Currency;
 var currencies = global.nss.db.collection('currencies');
 var _ = require('lodash');
 
-Currency.nickelLimit = 80;
-Currency.dimeLimit = 100;
-Currency.quarterLimit = 80;
-Currency.dollarCoinLimit = 50;
-Currency.paperBillLimit = 100;
-Currency.paperBillsAccepted = ['dollarBill', 'fiveDollarBill'];
 
+Currency.limit = {
+  'nickel': 80,
+  'dime': 100,
+  'quarter': 80,
+  'dollarCoin': 50,
+  'paperBill': 100
+};
+
+Currency.denominationsAccepted = ['nickel', 'dime', 'quarter', 'dollarCoin', 'dollarBill', 'fiveDollarBill'];
+Currency.paperBillsAccepted = ['dollarBill', 'fiveDollarBill'];
 
 module.exports = Currency;
 
@@ -61,17 +65,21 @@ Currency.totalByType = function(type, fn){
   });
 };
 
-Currency.slotsLeftByType = function(type, fn){
-  var slotsLeft;
-  var isPaper;
-  var upperLimit;
+Currency.isPaper = function(type){
+  var isPaper = false;
   _.each(Currency.paperBillsAccepted, function(billType){
     if(billType === type){
       isPaper = true;
     }
   });
-  if(isPaper){
-    slotsLeft = Currency.paperBillLimit;
+  return isPaper;
+};
+
+Currency.slotsLeftByType = function(type, fn){
+  var slotsLeft;
+  var upperLimit;
+  if(Currency.isPaper(type)){
+    slotsLeft = Currency.limit.paperBill;
     var bills = Currency.paperBillsAccepted;
     var iteration = 0;
     _.each(bills, function(bill){
@@ -86,16 +94,16 @@ Currency.slotsLeftByType = function(type, fn){
   } else {
     switch(type) {
       case 'nickel':
-        upperLimit = Currency.nickelLimit;
+        upperLimit = Currency.limit[type];
         break;
       case 'dime':
-        upperLimit = Currency.dimeLimit;
+        upperLimit = Currency.limit[type];
         break;
       case 'quarter':
-        upperLimit = Currency.quarterLimit;
+        upperLimit = Currency.limit[type];
         break;
       case 'dollarCoin':
-        upperLimit = Currency.dollarCoinLimit;
+        upperLimit = Currency.limit[type];
         break;
     }
     Currency.countByType(type, function(err, count){
@@ -141,10 +149,19 @@ Currency.dispenseOneByType = function(type, fn){
 Currency.totalAll = function(fn){
   currencies.find().toArray(function(err, records){
     var total = 0;
-    _.each(records, function(record){
-      total += record.value;
-    });
-    fn(err, total);
+    var iterator = 0;
+    if(records.length > 0){
+      _.each(records, function(record){
+        total += record.value;
+        iterator ++;
+        if(iterator === records.length){
+          total = (Math.ceil((total * 100)) / 100);
+          fn(err, total);
+        }
+      });
+    } else {
+      fn(err, 0);
+    }
   });
 };
 
@@ -159,3 +176,11 @@ Currency.emptyAll = function(fn){
     fn(err, count);
   });
 };
+
+
+
+
+
+
+
+

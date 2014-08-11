@@ -56,29 +56,24 @@ describe('Machine', function(){
       });
     });
   });
-
-
   describe('#update', function(){
     it('should update a Machine info in the database', function(done){
-      var m1 = new Machine({whatever: 'stuff'});
+      var m1 = new Machine(0.75);
       m1.insert(function(err, records){
-        m1.whatever = 'stuff changed';
+        m1.price = 1.00;
         m1.update(function(result){
           var id = (m1._id).toString();
           Machine.findById(id, function(record){
-            expect(record.whatever).to.deep.equal(m1.whatever);
+            expect(record.price).to.deep.equal(m1.price);
             done();
           });
         });
       });
     });
   });
-
-
-
   describe('destroy', function(){
     it('should delete a Machine from the DB', function(done){
-      var m1 = new Machine({whatever: 'stuff'});
+      var m1 = new Machine(0.75);
       m1.insert(function(err, records){
         Machine.destroy(m1._id, function(err, count){
           Machine.findById(records[0]._id.toString(), function(record){

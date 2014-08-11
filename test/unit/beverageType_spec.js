@@ -181,12 +181,6 @@ describe('BeverageType', function(){
       });
     });
   });
-  describe('purchase', function(){
-    it('should carry out all the functions of purchasing a drink in regards to beverage and currency quantity', function(done){
-      expect(1).to.equal(0);
-      done();
-    });
-  });
   describe('destroy', function(){
     it('should delete a BeverageType from the DB, as well as all associated beverages', function(done){
       var bt1 = new BeverageType('Cheerwine');
