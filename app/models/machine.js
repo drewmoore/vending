@@ -7,6 +7,7 @@ var path = require('path');
 var fs = require('fs');
 var _ = require('lodash');
 var Currency = require('./currency');
+var Beverage = require('./beverage');
 
 module.exports = Machine;
 
@@ -145,7 +146,6 @@ Machine.prototype.makeChange = function(moneyIn, fn){
   }
 
   function dispenseCoins(type, totalByType, dispenseCallBack){
-    var stillNeeded = changeNeeded - moneyOut;
     Currency.dispenseOneByType(type.type, function(err, count){
       if(err || moneyOut >= changeNeeded){
         dispenseCallBack(err);
@@ -161,6 +161,27 @@ Machine.prototype.makeChange = function(moneyIn, fn){
       }
     });
   }
+};
+
+Machine.prototype.vend = function(beverageType, currencyIn, fn){
+  var self = this;
+  var vended = {};
+  var currencies = [];
+  var currencyInTotal = 0;
+  _.each(currencyIn, function(currency){
+    for(var i=0; i<currency.quantity; i++){
+      var c = new Currency(currency.type);
+      currencies.push(c);
+      currencyInTotal += c.value;
+    }
+  });
+  self.makeChange(currencyInTotal, function(err, coinsDispensed){
+    vended.coinsDispensed = coinsDispensed;
+    Beverage.dispenseOneByType(beverageType, function(err, count){
+      vended.beverageType = beverageType;
+      fn(err, vended);
+    });
+  });
 };
 
 

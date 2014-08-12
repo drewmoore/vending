@@ -8,6 +8,7 @@ var Mongo = require('mongodb');
 var _ = require('lodash');
 var Machine;
 var Currency;
+var Beverage;
 
 describe('Machine', function(){
   this.timeout(10000);
@@ -16,6 +17,7 @@ describe('Machine', function(){
     initMongo.db(function(){
       Machine = require('../../app/models/machine');
       Currency = require('../../app/models/currency');
+      Beverage = require('../../app/models/beverage');
       done();
     });
   });
@@ -160,10 +162,39 @@ describe('Machine', function(){
                 Currency.countByType('nickel', function(err, nickelCount){
                   expect(coinsDispensed.dollarCoin).to.equal(0);
                   expect(coinsDispensed.quarter).to.equal(0);
+                  expect(coinsDispensed.dime).to.equal(2);
+                  expect(coinsDispensed.nickel).to.equal(1);
                   expect(quarterCount).to.equal(0);
                   expect(dimeCount).to.equal(0);
                   expect(nickelCount).to.equal(2);
                   done();
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+  describe('vend', function(){
+    it('should complete all processes necessary to vend a beverage, track in the database, save and return the state of the machine', function(done){
+      var m1 = new Machine(0.75);
+      Beverage.stockNew('Cheerwine', 10, function(err, count){
+        Currency.stockNewByType('dime', 2, function(err, count){
+          Currency.stockNewByType('nickel', 3, function(err, count){
+            var currencyIn = [{'type': 'dollarBill', 'quantity': 1}];
+            m1.vend('Cheerwine', currencyIn, function(err, vended){
+              Beverage.countByProductName('Cheerwine', function(err, beverageCount){
+                Currency.countByType('dime', function(err, dimeCount){
+                  Currency.countByType('nickel', function(err, nickelCount){
+                    expect(vended.beverageType).to.equal('Cheerwine');
+                    expect(vended.coinsDispensed.dime).to.equal(2);
+                    expect(vended.coinsDispensed.nickel).to.equal(1);
+                    expect(beverageCount).to.equal(9);
+                    expect(dimeCount).to.equal(0);
+                    expect(nickelCount).to.equal(2);
+                    done();
+                  });
                 });
               });
             });
