@@ -103,6 +103,80 @@ Machine.prototype.canMakeChange = function(fn){
   });
 };
 
+Machine.prototype.makeChange = function(moneyIn, fn){
+  var price = this.price;
+  var changeNeeded = moneyIn - price;
+  var moneyOut = 0;
+  var coinsDispensed = {};
+  var currencies = [];
+  _.each(Currency.denominationsAccepted, function(type){
+    if(!Currency.isPaper(type)){
+      var c = new Currency(type);
+      currencies.push(c);
+    }
+  });
+  var types = _.sortBy(currencies, 'value').reverse();
+
+  console.log('MACHINE MAKE CHANGE: THESE ARE THE TYPES: ', types, types.length);
+
+  var iterator = 0;
+
+  getTotalsByType();
+  function getTotalsByType(){
+
+    var type = types[iterator];
+
+    console.log('MACHINE MAKE CHANGE: GET TOTALS BY TYPE: ', type.type, iterator);
+
+    Currency.totalByType(type.type, function(err, totalByType){
+
+      console.log('MACHINE MAKE CHANGE: EACH TYPE: CURRENCY TOTAL BY TYPE: ', type.type, types[iterator].type, totalByType, iterator);
+
+      if(totalByType >= type.value){
+        coinsDispensed[type.type] = 0;
+        dispenseCoins(type, totalByType, function(err){
+
+          console.log('DISPENSE COINS CALLBACK: ', err);
+
+          iterator ++;
+          getTotalsByType();
+        });
+      } else {
+        iterator ++;
+        if(iterator === types.length){
+          fn(err, coinsDispensed);
+        }
+      }
+    });
+  }
+
+  function dispenseCoins(type, totalByType, dispenseCallBack){
+
+    console.log('DISPENSE COINS CALLED: ', moneyOut, type, types[iterator], totalByType, iterator);
+
+    Currency.dispenseOneByType(type.type, function(err, count){
+      if(err){
+
+        console.log('THIS TYPE RAN OUT OR WAS EMPTY: ', moneyOut, type, totalByType, iterator);
+
+        dispenseCallBack(err);
+      } else {
+        coinsDispensed[type.type] ++;
+        moneyOut += type.value * count;
+        totalByType -= type.value;
+        if(moneyOut >= changeNeeded){
+          fn(err, coinsDispensed);
+        } else {
+
+          console.log('DISPENSE COINS MONEY OUT < CHANGE NEEDED: ', moneyOut, type, totalByType, coinsDispensed, iterator);
+
+          dispenseCoins(type, totalByType, dispenseCallBack);
+        }
+      }
+    });
+  }
+};
+
 
 
 

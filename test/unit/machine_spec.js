@@ -5,6 +5,7 @@ var expect = require('chai').expect;
 var fs = require('fs');
 var exec = require('child_process').exec;
 var Mongo = require('mongodb');
+var _ = require('lodash');
 var Machine;
 var Currency;
 
@@ -98,6 +99,31 @@ describe('Machine', function(){
               done();
             });
           });
+        });
+      });
+    });
+  });
+  describe('#makeChange', function(){
+    it('should provide accurate change for any purchase', function(done){
+      var m1 = new Machine(1.5);
+      var iterator = 0;
+      var types = Currency.denominationsAccepted;
+      _.each(types, function(type){
+        Currency.stockNewByType(type, 3, function(err, count){
+          iterator ++;
+          if(iterator === types.length){
+            m1.makeChange(5, function(err, coinsDispensed){
+              Currency.countByType('dollarCoin', function(err, dollarCoinCount){
+                Currency.countByType('quarter', function(err, quarterCount){
+                  expect(coinsDispensed.dollarCoin).to.equal(3);
+                  expect(coinsDispensed.quarter).to.equal(2);
+                  expect(dollarCoinCount).to.equal(0);
+                  expect(quarterCount).to.equal(1);
+                  done();
+                });
+              });
+            });
+          }
         });
       });
     });
