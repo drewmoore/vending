@@ -23,6 +23,7 @@ Transaction.prototype.insert = function(fn){
   var self = this;
   transactions.find({_id:self._id}).toArray(function(err, foundEntries){
     if(foundEntries.length === 0){
+      self.time = new Date();
       transactions.insert(self, function(err, records){
         fn(err, records);
       });

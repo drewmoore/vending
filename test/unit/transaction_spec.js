@@ -40,6 +40,7 @@ describe('Transaction', function(){
       var t1 = new Transaction(transaction);
       t1.insert(function(err, records){
         expect(t1._id).to.be.instanceof(Mongo.ObjectID);
+        expect(t1.time).to.be.instanceof(Date);
         expect(records[0].beverageType).to.equal(t1.beverageType);
         done();
       });
