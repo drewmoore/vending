@@ -9,6 +9,7 @@ var _ = require('lodash');
 var Machine;
 var Currency;
 var Beverage;
+var Transaction;
 
 describe('Machine', function(){
   this.timeout(10000);
@@ -18,6 +19,7 @@ describe('Machine', function(){
       Machine = require('../../app/models/machine');
       Currency = require('../../app/models/currency');
       Beverage = require('../../app/models/beverage');
+      Transaction = require('../../app/models/transaction');
       done();
     });
   });
@@ -134,12 +136,13 @@ describe('Machine', function(){
       Currency.stockNewByType('quarter', 13, function(err, count){
         Currency.stockNewByType('dime', 4, function(err, count){
           Currency.stockNewByType('nickel', 3, function(err, count){
-            m1.makeChange(5, function(err, coinsDispensed){
+            m1.makeChange(5, function(err, coinsDispensed, totalDispensed){
               Currency.countByType('quarter', function(err, quarterCount){
                 Currency.countByType('dime', function(err, dimeCount){
                   Currency.countByType('nickel', function(err, nickelCount){
                     expect(coinsDispensed.dollarCoin).to.equal(0);
                     expect(coinsDispensed.quarter).to.equal(13);
+                    expect(totalDispensed).to.equal(3.75);
                     expect(quarterCount).to.equal(0);
                     expect(dimeCount).to.equal(0);
                     expect(nickelCount).to.equal(1);
@@ -156,7 +159,7 @@ describe('Machine', function(){
       var m1 = new Machine(0.75);
       Currency.stockNewByType('dime', 2, function(err, count){
         Currency.stockNewByType('nickel', 3, function(err, count){
-          m1.makeChange(1, function(err, coinsDispensed){
+          m1.makeChange(1, function(err, coinsDispensed, totalDispensed){
             Currency.countByType('quarter', function(err, quarterCount){
               Currency.countByType('dime', function(err, dimeCount){
                 Currency.countByType('nickel', function(err, nickelCount){
@@ -164,6 +167,7 @@ describe('Machine', function(){
                   expect(coinsDispensed.quarter).to.equal(0);
                   expect(coinsDispensed.dime).to.equal(2);
                   expect(coinsDispensed.nickel).to.equal(1);
+                  expect(totalDispensed).to.equal(0.25);
                   expect(quarterCount).to.equal(0);
                   expect(dimeCount).to.equal(0);
                   expect(nickelCount).to.equal(2);
@@ -187,14 +191,23 @@ describe('Machine', function(){
               Beverage.countByProductName('Cheerwine', function(err, beverageCount){
                 Currency.countByType('dime', function(err, dimeCount){
                   Currency.countByType('nickel', function(err, nickelCount){
-                    expect(vendErr).to.equal(null);
-                    expect(vended.beverageType).to.equal('Cheerwine');
-                    expect(vended.coinsDispensed.dime).to.equal(2);
-                    expect(vended.coinsDispensed.nickel).to.equal(1);
-                    expect(beverageCount).to.equal(9);
-                    expect(dimeCount).to.equal(0);
-                    expect(nickelCount).to.equal(2);
-                    done();
+                    Transaction.findByBeverageType('Cheerwine', function(err, transactions){
+                      expect(vendErr).to.equal(null);
+                      expect(vended.beverageType).to.equal('Cheerwine');
+                      expect(vended.coinsDispensed.dime).to.equal(2);
+                      expect(vended.coinsDispensed.nickel).to.equal(1);
+                      expect(vended.currencyInTotal).to.equal(1);
+                      expect(vended.totalChange).to.equal(0.25);
+                      expect(beverageCount).to.equal(9);
+                      expect(dimeCount).to.equal(0);
+                      expect(nickelCount).to.equal(2);
+                      expect(transactions.length).to.equal(1);
+                      expect(transactions[0].beverageType).to.equal('Cheerwine');
+                      expect(transactions[0].coinsDispensed.dime).to.equal(2);
+                      expect(transactions[0].totalChange).to.equal(0.25);
+                      expect(transactions[0].currencyInTotal).to.equal(1);
+                      done();
+                    });
                   });
                 });
               });

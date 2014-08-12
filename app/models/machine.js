@@ -8,6 +8,7 @@ var fs = require('fs');
 var _ = require('lodash');
 var Currency = require('./currency');
 var Beverage = require('./beverage');
+var Transaction = require('./transaction');
 
 module.exports = Machine;
 
@@ -109,6 +110,7 @@ Machine.prototype.makeChange = function(moneyIn, fn){
   var changeNeeded = moneyIn - price;
   var moneyOut = 0;
   var coinsDispensed = {};
+  var totalChange = 0.00;
   var currencies = [];
   _.each(Currency.denominationsAccepted, function(type){
     if(!Currency.isPaper(type)){
@@ -129,7 +131,7 @@ Machine.prototype.makeChange = function(moneyIn, fn){
         dispenseCoins(type, totalByType, function(err){
           iterator ++;
           if(iterator === types.length){
-            fn(err, coinsDispensed);
+            fn(err, coinsDispensed, totalChange);
           } else {
             getTotalsByType();
           }
@@ -137,7 +139,7 @@ Machine.prototype.makeChange = function(moneyIn, fn){
       } else {
         iterator ++;
         if(iterator === types.length){
-          fn(err, coinsDispensed);
+          fn(err, coinsDispensed, totalChange);
         } else {
           getTotalsByType();
         }
@@ -151,6 +153,7 @@ Machine.prototype.makeChange = function(moneyIn, fn){
         dispenseCallBack(err);
       } else {
         coinsDispensed[type.type] ++;
+        totalChange += type.value;
         moneyOut += type.value * count;
         totalByType -= type.value;
         if(moneyOut >= changeNeeded){
@@ -174,11 +177,16 @@ Machine.prototype.vend = function(beverageType, currencyIn, fn){
     currencyInTotal += c.value;
   });
   Currency.insertMany(currencies, function(err, records){
-    self.makeChange(currencyInTotal, function(err, coinsDispensed){
+    self.makeChange(currencyInTotal, function(err, coinsDispensed, totalChange){
       vended.coinsDispensed = coinsDispensed;
+      vended.currencyInTotal = currencyInTotal;
+      vended.totalChange = totalChange;
       Beverage.dispenseOneByType(beverageType, function(err, count){
         vended.beverageType = beverageType;
-        fn(err, vended);
+        var t1 = new Transaction(vended);
+        t1.insert(function(err, records){
+          fn(err, vended);
+        });
       });
     });
   });
