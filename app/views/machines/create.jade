@@ -1,0 +1,39 @@
+extends ../shared/template
+
+block content
+
+  .row
+    .small-2.columns
+      &nbsp;
+    .small-8.columns
+      if err
+        .row
+          .small-12.columns
+              p #{err}
+    .small-2.columns
+
+  .row
+    .small-12.columns
+      .row
+        .small-12.columns
+          form(action='/machines/create', method='post', enctype='multipart/form-data')
+            fieldset
+              legend Add a Machine
+                label Select a Beverage Price
+                select(name='price')
+                  - var repititions = 5/.05;
+                  - for(var i=0; i<repititions; i++){
+                  - var price = (parseInt((i * 0.05) * 100) / 100).toFixed(2);
+                      option(value=price)= price
+                  -  }
+                label Load With Change
+                each currency in currencies
+                  select(name=currency.type)
+                    option(selected disabled)= currency.type
+                    - for(var i=0; i<currency.limit; i++){
+                      -  var coins = i + 1;
+                        option(value=coins)= coins
+                    -  }
+                label Upload a Skin
+                input(name='imageFile', type='file')
+                button Add the Machine

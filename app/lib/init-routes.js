@@ -14,10 +14,14 @@ module.exports = function(req, res, next){
 
 function load(app, fn){
   var home = require('../routes/home');
-  var sampleModels = require('../routes/sampleModels');
-  var users = require('../routes/users');
+  var machines = require('../routes/machines');
+  //var beverages = require('../routes/beverages');
+  //var beverageTypes = require('../routes/beverageTypes');
+  //var transactions = require('../routes/transactions');
 
   app.get('/', d, home.index);
+  app.get('/machines/create', d, machines.createPage);
+  /*
   app.get('/sampleModels', d, sampleModels.index);
   app.get('/sampleModels/create', d, sampleModels.createPage);
   app.get('/sampleModels/:id', d, sampleModels.show);
@@ -29,6 +33,7 @@ function load(app, fn){
   app.post('/logout', d, users.logout);
   app.post('/sampleModels/update/:id', d, sampleModels.update);
   app.post('/sampleModels/delete/:id', d, sampleModels.remove);
+  */
   console.log('Routes Loaded');
   fn();
 }

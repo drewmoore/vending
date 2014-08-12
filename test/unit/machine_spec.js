@@ -53,6 +53,21 @@ describe('Machine', function(){
       });
     });
   });
+  describe('index', function(){
+    it('should find and return all machines', function(done){
+      var m1 = new Machine(0.75);
+      var m2 = new Machine(1.00);
+      m1.insert(function(err, records){
+        m2.insert(function(err, records2){
+          Machine.index(function(records3){
+            expect(records3.length).to.equal(2);
+            expect(records[0].price).to.equal(0.75);
+            done();
+          });
+        });
+      });
+    });
+  });
   describe('#addImage', function(){
     it('should add an image', function(done){
       var m1 = new Machine(0.75);

@@ -1,5 +1,13 @@
 'use strict';
+var Machine = require('../models/machine');
 
 exports.index = function(req, res){
-  res.render('home/index', {title: 'Beer Thirty'});
+  Machine.index(function(records){
+    if(records.length > 0){
+      var machine = records[0];
+      res.render('home/index', {machine:machine});
+    } else {
+      res.redirect('/machines/create');
+    }
+  });
 };
