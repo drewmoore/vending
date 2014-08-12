@@ -39,6 +39,18 @@ describe('Currency', function(){
       });
     });
   });
+  describe('insertMany', function(){
+    it('should add multiple new Currency records to the database', function(done){
+      var c1 = new Currency('quarter');
+      var c2 = new Currency('dime');
+      var currencies = [c1, c2];
+      Currency.insertMany(currencies, function(err, records){
+        expect(c1._id).to.be.instanceof(Mongo.ObjectID);
+        expect(records[1].value).to.equal(0.10);
+        done();
+      });
+    });
+  });
   describe('countByType', function(){
     it('should return a count of a specified currency type', function(done){
       var c1 = new Currency('quarter');

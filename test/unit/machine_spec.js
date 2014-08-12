@@ -183,10 +183,11 @@ describe('Machine', function(){
         Currency.stockNewByType('dime', 2, function(err, count){
           Currency.stockNewByType('nickel', 3, function(err, count){
             var currencyIn = [{'type': 'dollarBill', 'quantity': 1}];
-            m1.vend('Cheerwine', currencyIn, function(err, vended){
+            m1.vend('Cheerwine', currencyIn, function(vendErr, vended){
               Beverage.countByProductName('Cheerwine', function(err, beverageCount){
                 Currency.countByType('dime', function(err, dimeCount){
                   Currency.countByType('nickel', function(err, nickelCount){
+                    expect(vendErr).to.equal(null);
                     expect(vended.beverageType).to.equal('Cheerwine');
                     expect(vended.coinsDispensed.dime).to.equal(2);
                     expect(vended.coinsDispensed.nickel).to.equal(1);

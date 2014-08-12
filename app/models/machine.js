@@ -169,17 +169,17 @@ Machine.prototype.vend = function(beverageType, currencyIn, fn){
   var currencies = [];
   var currencyInTotal = 0;
   _.each(currencyIn, function(currency){
-    for(var i=0; i<currency.quantity; i++){
-      var c = new Currency(currency.type);
-      currencies.push(c);
-      currencyInTotal += c.value;
-    }
+    var c = new Currency(currency.type);
+    currencies.push(c);
+    currencyInTotal += c.value;
   });
-  self.makeChange(currencyInTotal, function(err, coinsDispensed){
-    vended.coinsDispensed = coinsDispensed;
-    Beverage.dispenseOneByType(beverageType, function(err, count){
-      vended.beverageType = beverageType;
-      fn(err, vended);
+  Currency.insertMany(currencies, function(err, records){
+    self.makeChange(currencyInTotal, function(err, coinsDispensed){
+      vended.coinsDispensed = coinsDispensed;
+      Beverage.dispenseOneByType(beverageType, function(err, count){
+        vended.beverageType = beverageType;
+        fn(err, vended);
+      });
     });
   });
 };

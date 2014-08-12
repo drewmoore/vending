@@ -49,6 +49,12 @@ Currency.prototype.insert = function(fn){
   });
 };
 
+Currency.insertMany = function(currenciesIn, fn){
+  currencies.insert(currenciesIn, function(err, records){
+    fn(err, records);
+  });
+};
+
 Currency.countByType = function(type, fn){
   currencies.find({type:type}).toArray(function(err, records){
     fn(err, records.length);
