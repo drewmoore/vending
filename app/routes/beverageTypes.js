@@ -1,10 +1,9 @@
 'use strict';
 
-var Machine = require('../models/machine');
-var Currency = require('../models/currency');
-var _ = require('lodash');
+var User = require('../models/user');
+var SampleModel = require('../models/sampleModel');
+var Mongo = require('mongodb');
 
-/*
 exports.index = function(req, res){
   SampleModel.index(function(sampleModels){
     User.findById(req.session.userId, function(err, user){
@@ -12,55 +11,49 @@ exports.index = function(req, res){
     });
   });
 };
-*/
 
 exports.createPage = function(req, res){
-  var currencies = [];
-  _.each(Currency.denominationsAccepted, function(denom){
-    if(!Currency.isPaper(denom)){
-      var c = {};
-      c.type = denom;
-      c.limit = Currency.limit[denom];
-      currencies.push(c);
-    }
-  });
-  res.render('machines/create', {currencies:currencies});
+  if(req.session.userId){
+    User.findById(req.session.userId, function(err, user){
+      res.render('sampleModels/create', {title:'Add a New Sample Model', user:user});
+    });
+  } else {
+    res.render('users/auth', {title:'Register/Login'});
+  }
 };
 
 exports.create = function(req, res){
-  var machine =  {
-    price: parseFloat(req.body.price) || 0.75
+  var sampleModel =  {
+    whatever: req.body.whatever || 'default setting'
   };
+  var userIdString = req.session.userId.toString();
   var imageFile = req.body.imageFile || req.files.imageFile.path;
-  var m1 = new Machine(machine);
-  m1.addImage(imageFile, function(err){
-    m1.insert(function(err, records){
-      Currency.emptyAll(function(err, count){
-        var iteration = 0;
-        var types = Currency.denominationsAccepted;
-        _.each(types, function(type){
-          if(Currency.isPaper(type)){
-            iteration ++;
-          } else {
-            var quantity = req.body[type];
-            Currency.stockNewByType(type, quantity, function(err, count){
-              iteration ++;
-              if(iteration === types.length){
-                if(typeof err === 'string'){
-                  res.redirect('/machines/create');
-                } else {
-                  res.redirect('/');
-                }
-              }
+  User.findById(userIdString, function(userErr, user){
+    if(typeof userErr === 'string'){
+      res.render('sampleModels/create', {title:'Add a New Sample Model', err:userErr, user:user});
+    } else {
+      var s1 = new SampleModel(sampleModel);
+      s1.addUser(user._id);
+      s1.insert(function(modelErr, records){
+        if(typeof modelErr === 'string'){
+          res.render('sampleModels/create', {title:'Add a New Sample Model', err:modelErr, user:user});
+        } else {
+          var u1 = new User(user);
+          u1._id = user._id;
+          u1.addSampleModel(s1._id);
+          s1.addImage(imageFile, function(err){
+            u1.update(function(err, userRecord){
+              s1.update(function(err, sampleModelRecord){
+                res.redirect('sampleModels/' + s1._id.toString());
+              });
             });
-          }
-        });
+          });
+        }
       });
-    });
+    }
   });
 };
 
-/*
 exports.edit = function(req, res){
   SampleModel.findById(req.params.id, function(sampleModel){
     User.findById(req.session.userId, function(err, user){
@@ -97,4 +90,3 @@ exports.show = function(req, res){
     });
   });
 };
-*/

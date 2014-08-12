@@ -1,0 +1,10 @@
+extends ../shared/template
+block content
+
+  .row
+    each sampleModel in sampleModels
+      a(href="/sampleModels/" + sampleModel._id.toString())
+        div
+          img(src=sampleModel.image)
+          p= sampleModel.whatever
+

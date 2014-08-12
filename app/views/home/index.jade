@@ -3,5 +3,7 @@ block content
   h1 It's Beer Thirty, yo!
 
   if machine
-    h5= machine.toString();
+    h5= machine.toString()
+    - console.log(machine);
+    img(src=machine.image)
 

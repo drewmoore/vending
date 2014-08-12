@@ -15,12 +15,15 @@ module.exports = function(req, res, next){
 function load(app, fn){
   var home = require('../routes/home');
   var machines = require('../routes/machines');
+  var beverageTypes = require('../routes/beverageTypes');
   //var beverages = require('../routes/beverages');
   //var beverageTypes = require('../routes/beverageTypes');
   //var transactions = require('../routes/transactions');
 
   app.get('/', d, home.index);
   app.get('/machines/create', d, machines.createPage);
+  app.get('/beverageTypes/create', d, beverageTypes.createPage);
+  app.post('/machines/create', d, machines.create);
   /*
   app.get('/sampleModels', d, sampleModels.index);
   app.get('/sampleModels/create', d, sampleModels.createPage);
