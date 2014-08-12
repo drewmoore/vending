@@ -104,7 +104,7 @@ describe('Machine', function(){
     });
   });
   describe('#makeChange', function(){
-    it('should provide accurate change for any purchase', function(done){
+    it('should provide accurate change for any purchase (price: 1.5, three of each denomination)', function(done){
       var m1 = new Machine(1.5);
       var iterator = 0;
       var types = Currency.denominationsAccepted;
@@ -124,6 +124,50 @@ describe('Machine', function(){
               });
             });
           }
+        });
+      });
+    });
+    it('should provide accurate change for any purchase (price: 1.25, 13 quarters, 4 dimes, 3 nickels)', function(done){
+      var m1 = new Machine(1.25);
+      Currency.stockNewByType('quarter', 13, function(err, count){
+        Currency.stockNewByType('dime', 4, function(err, count){
+          Currency.stockNewByType('nickel', 3, function(err, count){
+            m1.makeChange(5, function(err, coinsDispensed){
+              Currency.countByType('quarter', function(err, quarterCount){
+                Currency.countByType('dime', function(err, dimeCount){
+                  Currency.countByType('nickel', function(err, nickelCount){
+                    expect(coinsDispensed.dollarCoin).to.equal(0);
+                    expect(coinsDispensed.quarter).to.equal(13);
+                    expect(quarterCount).to.equal(0);
+                    expect(dimeCount).to.equal(0);
+                    expect(nickelCount).to.equal(1);
+                    done();
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+    it('should provide accurate change for any purchase (price: .75, 2 dimes, 3 nickels)', function(done){
+      var m1 = new Machine(0.75);
+      Currency.stockNewByType('dime', 2, function(err, count){
+        Currency.stockNewByType('nickel', 3, function(err, count){
+          m1.makeChange(1, function(err, coinsDispensed){
+            Currency.countByType('quarter', function(err, quarterCount){
+              Currency.countByType('dime', function(err, dimeCount){
+                Currency.countByType('nickel', function(err, nickelCount){
+                  expect(coinsDispensed.dollarCoin).to.equal(0);
+                  expect(coinsDispensed.quarter).to.equal(0);
+                  expect(quarterCount).to.equal(0);
+                  expect(dimeCount).to.equal(0);
+                  expect(nickelCount).to.equal(2);
+                  done();
+                });
+              });
+            });
+          });
         });
       });
     });
