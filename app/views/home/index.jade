@@ -3,9 +3,9 @@ block content
 
   if machine
     if machine.hasChange
-      p Has Change
+      - var coinCount = '0.00';
     else
-      p Out of Change
+      - var coinCount = 'OUT OF SERVICE';
 
     .machine(style="background-image: url(" + machine.image + ");")
       .machine-interface
@@ -17,7 +17,23 @@ block content
                   h5 It's out
           .small-4.columns
             .coin-display
-              h1 0.00
+              h1= coinCount
+        .row
+          .small-12.columns.wallet
+            .row
+              .small-2.columns
+                .currency.five-dollar
+              .small-2.columns
+                .currency.dollar-bill
+              .small-2.columns
+                .currency.dollar-coin
+              .small-2.columns
+                .currency.quarter
+              .small-2.columns
+                .currency.dime
+              .small-2.columns
+                .currency.nickel
+
 
 
 

@@ -22,9 +22,9 @@ html(class='no-js', lang='en')
             li.divider
             li: a(href="/beverageTypes/edit") Change Beverages
           ul.right
-            li: a(href="/machines/edit/" + machine.id) Administer Machine
+            li: a(href="/machines/edit/" + machine._id.toString()) Administer Machine
             li.divider
-            li: a(href="/machines/summary/" + machine.id) Summary
+            li: a(href="/machines/summary/" + machine._id.toString()) Summary
             li.divider
             li: a(href="/transactions") Records
 

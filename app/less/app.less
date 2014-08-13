@@ -15,10 +15,19 @@ ul {
   list-style: none;
 }
 
+label {
+  color: black;
+}
+
+strong {
+  color: white;
+}
+
 .machine {
   min-height: @screen-height;
   background-size: 100% 100%;
   position: relative;
+  overflow: auto;
 }
 
 .machine-interface {
@@ -36,7 +45,7 @@ ul {
 
 .beverageLogo {
   min-height: 7em;
-  min-width: 15em;
+  min-width: 14em;
   max-width: 25%;
   margin: 1em 1em;
   display: inline-block;
@@ -48,9 +57,50 @@ ul {
 .coin-display {
   text-align: center;
   background-color: rgba(20, 20, 20, .7);
+  padding: 2em;
 }
 
 .coin-display  > h1 {
   font-family: "digital";
   color: rgba(200, 20, 20, .8);
+}
+
+.wallet {
+  vertical-align: bottom;
+  text-align: center;
+  background-color: rgba(20, 20, 20, .7);
+  margin: 10em auto 2em auto;
+}
+
+.currency {
+  display: inline-block;
+  min-height: 3em;
+  min-width: 7em;
+  background-size: contain;
+  background-repeat: no-repeat;
+  margin: 1em;
+}
+
+.five-dollar {
+  background-image: url('/img/five-dollar.jpg');
+}
+
+.dollar-bill {
+  background-image: url('/img/dollarbill.jpg');
+}
+
+.dollar-coin {
+  background-image: url('/img/dollarcoin.jpg');
+}
+
+.quarter {
+  background-image: url('/img/quarter.png');
+}
+
+.dime {
+  background-image: url('/img/dime.png');
+}
+
+.nickel {
+  background-image: url('/img/nickel.jpg');
 }

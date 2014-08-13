@@ -129,7 +129,11 @@ Currency.stockNewByType = function(type, quantity, fn){
         currenciesToStock.push(c1);
       }
       currencies.insert(currenciesToStock, function(err, records){
-        fn(err, records.length);
+        if(err){
+          fn('nothing to stock');
+        } else {
+          fn(err, records.length);
+        }
       });
     } else {
       var customErr = 'You have tried to overstock the machine. There are only ' + quantityLimit + ' slots left open for ' + type + '.';

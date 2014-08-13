@@ -9,6 +9,7 @@ exports.index = function(req, res){
     if(records.length > 0){
       var machine = new Machine(records[0].price);
       machine.image = records[0].image;
+      machine._id = records[0]._id;
       machine.id = records[0]._id.toString();
       machine.canMakeChange(function(hasChange){
         machine.hasChange = hasChange;
