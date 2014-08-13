@@ -90,9 +90,6 @@ exports.edit = function(req, res){
 
 exports.update = function(req, res){
   Machine.findById(req.params.id, function(machine){
-
-    console.log('IIIIIIIIMMMMMMMMMAGEE FILE?', req.files);
-
     var m1 = new Machine(machine.price);
     var imageFile = req.body.imageFile || req.files.imageFile.path;
     m1._id = machine._id;

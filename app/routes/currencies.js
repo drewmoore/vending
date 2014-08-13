@@ -1,6 +1,7 @@
 'use strict';
 
 var Currency = require('../models/currency');
+var _ = require('lodash');
 
 /*
 exports.index = function(req, res){
@@ -63,6 +64,24 @@ exports.edit = function(req, res){
 */
 
 exports.update = function(req, res){
+  var coinCurrencies = [];
+  var iterator = 0;
+  _.each(Currency.denominationsAccepted, function(denom){
+    if(!Currency.isPaper(denom)){
+      coinCurrencies.push(denom);
+    }
+  });
+  _.each(coinCurrencies, function(type){
+    var quantity = req.body[type];
+    Currency.emptyByType(type, function(err, count){
+      Currency.stockNewByType(type, quantity, function(err, count){
+        iterator ++;
+        if(iterator === coinCurrencies.length){
+          res.redirect('/');
+        }
+      });
+    });
+  });
 };
 
 /*

@@ -35,7 +35,7 @@ block content
             .row
               .small-12.columns
                 label Change Skin
-                input(name='imageFile', type='file')
+                input(name='imageFile', type='file', value=image)
             .row
               .small-12.columns
                 input(name='id', type='hidden', value=id)
@@ -45,7 +45,6 @@ block content
         form(action='/currencies/update', method='post')
           fieldset
             legend Change Up The Change
-
             .row
               each currency in currencies
                 .small-6.columns
