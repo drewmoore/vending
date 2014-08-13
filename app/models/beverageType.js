@@ -45,7 +45,7 @@ BeverageType.prototype.addImage = function(oldname, fn){
   var extension = path.extname(oldname);
   var absolutePath = __dirname + '/../static';
   var beverageTypesPath = absolutePath + '/img/beverageTypes';
-  var imageName = self.name.replace(' ', '-');
+  var imageName = self.name.split(' ').join('-');
   var relativePath = '/img/beverageTypes/' + imageName + extension;
   fs.mkdir(beverageTypesPath, function(){
     fs.rename(oldname, absolutePath + relativePath, function(err){
