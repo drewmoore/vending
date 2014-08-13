@@ -76,7 +76,7 @@ exports.update = function(req, res){
         if(req.files.imageFile.size > 0){
           var imageFile = req.body.imageFile || req.files.imageFile.path;
           bt1.addImage(imageFile, function(err){
-            bt1.insert(function(err, records){
+            bt1.update(function(err, record){
               var quantity = req.body.quantity;
               if(quantity){
                 Beverage.emptyByName(changedType.name, function(err, count){

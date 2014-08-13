@@ -126,7 +126,7 @@ exports.summary = function(req, res){
       });
     });
   });
-}
+};
 
 /*
 exports.remove = function(req, res){

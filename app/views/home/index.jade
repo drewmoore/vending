@@ -6,11 +6,18 @@ block content
       p Has Change
     else
       p Out of Change
-    img(src=machine.image)
 
-    each beverage in beverageTypes
-      h5= beverage.name
-      img(src=beverage.image)
-      if beverage.isOut
-        h5 It's out
+    .machine(style="background-image: url(" + machine.image + ");")
+      .machine-interface
+        .row
+          .small-8.columns
+            each beverage in beverageTypes
+              .beverageLogo(style="background-image: url(" + beverage.image + ");")
+                if beverage.isOut
+                  h5 It's out
+          .small-4.columns
+            .coin-display
+              h1 0.00
+
+
 

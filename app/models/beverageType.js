@@ -45,11 +45,24 @@ BeverageType.prototype.addImage = function(oldname, fn){
   var extension = path.extname(oldname);
   var absolutePath = __dirname + '/../static';
   var beverageTypesPath = absolutePath + '/img/beverageTypes';
-  var relativePath = '/img/beverageTypes/' + self.name + extension;
+  var imageName = self.name.replace(' ', '-');
+  var relativePath = '/img/beverageTypes/' + imageName + extension;
   fs.mkdir(beverageTypesPath, function(){
     fs.rename(oldname, absolutePath + relativePath, function(err){
       self.image = relativePath;
+
+      console.log(' INSERTING IMAGE: ', self);
+
       fn(err);
+    });
+  });
+};
+
+BeverageType.prototype.update = function(fn){
+  var self = this;
+  beverageTypes.update({_id:self._id}, self, function(err, count){
+    BeverageType.findById(self._id.toString(), function(record){
+      fn(err, record);
     });
   });
 };
