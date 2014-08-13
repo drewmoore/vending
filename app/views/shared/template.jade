@@ -10,21 +10,23 @@ html(class='no-js', lang='en')
     link(rel='stylesheet', href='/less/app.css')
     script(src='/js/vendor/modernizr.js')
   body
-    nav.top-bar
-      ul.title-area
-        li.name
-          h1: a(href="/") Vend It Up!
-        li.toggle-topbar.menu-icon
-          a(href="#") Menu
+    if machine
+      nav.top-bar
+        ul.title-area
+          li.name
+            h1: a(href="/") Vend It Up!
 
-      section.top-bar-section
-        ul.left
-          li: a(href="/beverageTypes/create") New Beverage
-          li: a(href="/beverageTypes/edit") Change Beverages
-        ul.right
-          li: a(href="/machines/edit/" + machine.id) Administer Machine
-          li.divider
-          li: a(href="/transactions") Records
+        section.top-bar-section
+          ul.left
+            li: a(href="/beverageTypes/create") New Beverage
+            li.divider
+            li: a(href="/beverageTypes/edit") Change Beverages
+          ul.right
+            li: a(href="/machines/edit/" + machine.id) Administer Machine
+            li.divider
+            li: a(href="/machines/summary/" + machine.id) Summary
+            li.divider
+            li: a(href="/transactions") Records
 
     .row
       .small-12.columns

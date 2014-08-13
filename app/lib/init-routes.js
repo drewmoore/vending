@@ -24,6 +24,7 @@ function load(app, fn){
   app.get('/', d, home.index);
   app.get('/machines/create', d, machines.createPage);
   app.get('/machines/edit/:id', d, machines.edit);
+  app.get('/machines/summary/:id', d, machines.summary);
   app.get('/beverageTypes/create', d, beverageTypes.createPage);
   app.get('/beverageTypes/edit', d, beverageTypes.edit);
   app.post('/beverageTypes/update', d, beverageTypes.update);

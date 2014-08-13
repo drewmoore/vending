@@ -1,6 +1,7 @@
 'use strict';
 
 var Machine = require('../models/machine');
+var Beverage = require('../models/beverage');
 var Currency = require('../models/currency');
 var _ = require('lodash');
 
@@ -107,6 +108,25 @@ exports.update = function(req, res){
     }
   });
 };
+
+exports.summary = function(req, res){
+  Beverage.countAll(function(err, beverageCount){
+    Currency.totalAll(function(err, currencyTotal){
+      Machine.findById(req.params.id, function(machine){
+        var m1 = new Machine(machine.price);
+        m1._id = machine._id;
+        m1.canMakeChange(function(hasChange){
+          m1.hasChange = hasChange;
+          m1.inService = false;
+          if(m1.hasChange && (beverageCount > 0)){
+            m1.inService = true;
+          }
+          res.render('machines/summary', {machine:m1, beverageCount: beverageCount, currencyTotal:currencyTotal});
+        });
+      });
+    });
+  });
+}
 
 /*
 exports.remove = function(req, res){

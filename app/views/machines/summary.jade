@@ -1,0 +1,32 @@
+extends ../shared/template
+
+block content
+
+  .row
+    .small-2.columns
+      &nbsp;
+    .small-8.columns
+      if err
+        .row
+          .small-12.columns
+              p #{err}
+    .small-2.columns
+
+  .row
+    .small-12.columns
+      .row
+        .small-12.columns
+          ul
+            li
+              strong Total Drinks in Inventory: #{beverageCount}
+            li
+              strong Total Money in Bank: #{currencyTotal}
+            li
+              if machine.inService
+                strong Machine is in Service
+              else
+                strong Machine is out of Service
+            li
+              strong
+                a(href='/transactions') View Detailed Report
+
