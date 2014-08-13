@@ -32,7 +32,7 @@ exports.create = function(req, res){
     price: parseFloat(req.body.price) || 0.75
   };
   var imageFile = req.body.imageFile || req.files.imageFile.path;
-  var m1 = new Machine(machine);
+  var m1 = new Machine(machine.price);
   m1.addImage(imageFile, function(err){
     m1.insert(function(err, records){
       Currency.emptyAll(function(err, count){

@@ -3,7 +3,15 @@ block content
   h1 It's Beer Thirty, yo!
 
   if machine
-    h5= machine.toString()
-    - console.log(machine);
+    if machine.hasChange
+      p Has Change
+    else
+      p Out of Change
     img(src=machine.image)
+
+    each beverage in beverageTypes
+      h5= beverage.name
+      img(src=beverage.image)
+      if beverage.isOut
+        h5 It's out
 
