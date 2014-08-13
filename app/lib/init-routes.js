@@ -16,15 +16,19 @@ function load(app, fn){
   var home = require('../routes/home');
   var machines = require('../routes/machines');
   var beverageTypes = require('../routes/beverageTypes');
+  var currencies = require('../routes/currencies');
   //var beverages = require('../routes/beverages');
   //var beverageTypes = require('../routes/beverageTypes');
   //var transactions = require('../routes/transactions');
 
   app.get('/', d, home.index);
   app.get('/machines/create', d, machines.createPage);
+  app.get('/machines/edit/:id', d, machines.edit);
   app.get('/beverageTypes/create', d, beverageTypes.createPage);
   app.post('/machines/create', d, machines.create);
+  app.post('/machines/update/:id', d, machines.update);
   app.post('/beverageTypes/create', d, beverageTypes.create);
+  app.post('/currencies/update', d, currencies.update);
   /*
   app.get('/sampleModels', d, sampleModels.index);
   app.get('/sampleModels/create', d, sampleModels.createPage);

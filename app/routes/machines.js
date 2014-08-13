@@ -60,26 +60,58 @@ exports.create = function(req, res){
   });
 };
 
-/*
 exports.edit = function(req, res){
-  SampleModel.findById(req.params.id, function(sampleModel){
-    User.findById(req.session.userId, function(err, user){
-      res.render('sampleModels/edit', {title:'Edit a Sample Model', sampleModel:sampleModel, user:user});
+  Machine.findById(req.params.id, function(machine){
+    var currencies = [];
+    var iteration = 0;
+    var types = Currency.denominationsAccepted;
+    _.each(types, function(type){
+      if(Currency.isPaper(type)){
+        iteration ++;
+        if(iteration === types.length){
+          res.render('machines/edit', {machine:machine, currencies:currencies});
+        }
+      } else {
+        var c = new Currency(type);
+        Currency.countByType(type, function(err, count){
+          c.count = count;
+          c.limit = Currency.limit[type];
+          currencies.push(c);
+          iteration ++;
+          if(iteration === types.length){
+            res.render('machines/edit', {machine:machine, currencies:currencies});
+          }
+        });
+      }
     });
+
   });
 };
 
 exports.update = function(req, res){
-  var s1 = new SampleModel(req.body.sampleModel || req.body);
-  var imageFile = req.body.imageFile || req.files.imageFile.path;
-  s1._id = new Mongo.ObjectID(req.params.id);
-  s1.addImage(imageFile, function(err){
-    s1.update(function(record){
-      res.redirect('/sampleModels/' + req.params.id);
-    });
+  Machine.findById(req.params.id, function(machine){
+
+    console.log('IIIIIIIIMMMMMMMMMAGEE FILE?', req.files);
+
+    var m1 = new Machine(machine.price);
+    var imageFile = req.body.imageFile || req.files.imageFile.path;
+    m1._id = machine._id;
+    if(req.files.imageFile.size > 0){
+      m1.addImage(imageFile, function(err){
+        m1.update(function(record){
+          res.redirect('/');
+        });
+      });
+    } else {
+      m1.image = machine.image;
+      m1.update(function(record){
+        res.redirect('/');
+      });
+    }
   });
 };
 
+/*
 exports.remove = function(req, res){
   SampleModel.destroy(req.params.id, function(err, count){
     res.redirect('/sampleModels');
