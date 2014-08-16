@@ -29,13 +29,18 @@ exports.index = function(req, res){
                 if(iterator === beverageTypes.length) {
                   iterator = 0;
 
-                  // Calculate how many slots are left in change bank for each given denomination.  Report if any are full.
-                  var types = Currency.denominationsAccepted;
+                  // Calculate how many slots are left in change bank for each given denomination.  Report if any are full. Also check to see if 
+                  // there are enough open slots to make a purchase, based on machine's price.
+                  var currencyTypes = Currency.denominationsAccepted;
                   var slotsLeft = [];
-                  _.each(types, function(type){
+                  var overheadValue = 0;
+                  _.each(currencyTypes, function(type){
                     Currency.slotsLeftByType(type, function(overhead){
                       // Create an object that will contain the type of currency, and how much space is reserved for it in the machine.
+                      // Accrue value of slots left open, calculated by type, to make sure a beverage can still be purchased.
                       var slot = {};
+                      var c = new Currency(type);
+                      overheadValue += (overhead * c.value);
                       // Apply different rules to paper currency
                       if(Currency.isPaper(type)){
                         type = 'paperBill';
@@ -54,12 +59,21 @@ exports.index = function(req, res){
                       }
                       iterator ++;
 
-                      if(iterator === types.length) {
+                      if(iterator === currencyTypes.length) {
 
-                        console.log('SLOTS LEFT: ', slotsLeft);
+                        machine.hasOverheadInBank = true;
+                        machine.inService = true;
+                        if(overheadValue < machine.price){
+                          machine.hasOverheadInBank = false;
+                        }
+                        if(!machine.hasChange && !machine.hasOverheadInBank){
+                          machine.inService = false;
+                        }
+
+                        console.log('STUFF GOING TO VIEWS: ', machine, beverageTypes, slotsLeft, currencyTypes, Currency.paperBillsAccepted);
 
                         res.render('home/index', {machine:machine, beverageTypes:beverageTypes, slotsLeft:slotsLeft,
-                          denominationsAccepted: types, paperBillsAccepted:Currency.paperBillsAccepted});
+                          denominationsAccepted: currencyTypes, paperBillsAccepted:Currency.paperBillsAccepted});
                       }
                     });
                   });
