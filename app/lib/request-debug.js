@@ -1,6 +1,7 @@
 'use strict';
 
 var util = require('util');
+var request = require('request');
 
 module.exports = function(req, res, next){
   console.log('//----------------------------------------------//');
@@ -12,4 +13,3 @@ module.exports = function(req, res, next){
 
   next();
 };
-
