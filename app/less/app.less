@@ -1,4 +1,4 @@
-@bg-color: rgba(75, 75, 75, .9);
+@bg-color: rgba(2, 2, 2, 1);
 @screen-height: 40em;
 
 
@@ -23,8 +23,9 @@ strong {
   color: white;
 }
 
-.machine {
+#machine {
   min-height: @screen-height;
+  min-width: 100%;
   background-size: 100% 100%;
   position: relative;
   overflow: auto;
@@ -35,6 +36,7 @@ strong {
   min-height: 100%;
   min-width: 100%;
   top: 0px;
+  left: 0px;
   background-color: rgba(20, 20, 20, .5);
   padding: 2em;
 }
@@ -66,31 +68,37 @@ strong {
 }
 
 .wallet {
-  vertical-align: bottom;
   text-align: center;
   background-color: rgba(20, 20, 20, .7);
-  margin: 10em auto 2em auto;
+  margin: auto auto 2em auto;
+  width: 96%;
+  position: absolute;
+  bottom: 0px;
+}
+
+.currency-container {
+  text-align: center;
 }
 
 .currency {
   display: inline-block;
   min-height: 3em;
-  min-width: 7em;
+  min-width: 5em;
   background-size: contain;
   background-repeat: no-repeat;
   margin: 1em;
 }
 
-.five-dollar {
+.fiveDollarBill {
   background-image: url('/img/five-dollar.jpg');
 }
 
-.dollar-bill {
+.dollarBill {
   background-image: url('/img/dollarbill.jpg');
 }
 
-.dollar-coin {
-  background-image: url('/img/dollarcoin.jpg');
+.dollarCoin {
+  background-image: url('/img/dollarcoin.png');
 }
 
 .quarter {
@@ -102,5 +110,13 @@ strong {
 }
 
 .nickel {
-  background-image: url('/img/nickel.jpg');
+  background-image: url('/img/nickel.png');
+}
+
+
+
+.error-space {
+  margin: 2em auto;
+  background-color: rgba(150, 10, 10, .9);
+  color: rgba(200, 200, 200, .9);
 }

@@ -34,7 +34,7 @@ BeverageType.prototype.insert = function(fn){
             fn(err, records);
           });
         } else {
-          fn('That beverageType is already in here, yo!');
+          fn('Attempted to add a duplicate beverage or more beverages than there are empty slots!');
         }
       });
     });

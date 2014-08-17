@@ -31,7 +31,12 @@ exports.create = function(req, res){
   bt1.addImage(imageFile, function(err){
     bt1.insert(function(modelErr, records){
       if(typeof modelErr === 'string'){
-        res.render('beverageTypes/create', {err:modelErr});
+        Machine.index(function(records){
+          var machine = records[0];
+          machine.id = records[0]._id.toString();
+          var quantityLimit = Beverage.quantityLimit;
+          res.render('beverageTypes/create', {quantityLimit: quantityLimit, machine:machine, err:modelErr});
+        });
       } else {
         var quantity = req.body.quantity;
         Beverage.stockNew(bt1.name, quantity, function(err, count){

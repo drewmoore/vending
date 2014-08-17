@@ -2,17 +2,20 @@ extends ../shared/template
 block content
 
   if machine
-    if machine.hasChange
+    if machine.inService
       - var coinCount = '0.00';
     else
       - var coinCount = 'OUT OF SERVICE';
 
-    .machine(style="background-image: url(" + machine.image + ");")
+    #machine(style="background-image: url(" + machine.image + ");" data-id=machine.id, data-price=machine.price,
+      data-in-service=machine.inService, data-has-change=machine.hasChange, data-has-overhead-in-bank=machine.hasOverheadInBank,
+      data-)
       .machine-interface
         .row
           .small-8.columns
             each beverage in beverageTypes
-              .beverageLogo(style="background-image: url(" + beverage.image + ");")
+              .beverageLogo(style="background-image: url(" + beverage.image + ");", data-name=beverage.name, data-id=beverage._id.toString(),
+              data-is-out=beverage.isOut)
                 if beverage.isOut
                   h5 It's out
           .small-4.columns
@@ -21,18 +24,18 @@ block content
         .row
           .small-12.columns.wallet
             .row
-              .small-2.columns
-                .currency.five-dollar
-              .small-2.columns
-                .currency.dollar-bill
-              .small-2.columns
-                .currency.dollar-coin
-              .small-2.columns
-                .currency.quarter
-              .small-2.columns
-                .currency.dime
-              .small-2.columns
-                .currency.nickel
+              each denom in denominationsAccepted
+                .small-2.columns.currency-container
+                  .currency(class=denom)
+              each bill in paperBillsAccepted
+                .paperBillsAccepted.hidden(data-type=bill)
+              each slot in slotsLeft
+                .slotsLeft.hidden(data-type=slot.type, data-id-overhead=slot.overhead)
+
+
+
+
+
 
 
 

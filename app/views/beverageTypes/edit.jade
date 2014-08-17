@@ -2,6 +2,16 @@ extends ../shared/template
 
 block content
   .row
+    .small-2.columns
+      &nbsp;
+    .small-8.columns
+      if err
+        .row
+          .small-12.columns.error-space
+              p #{err}
+    .small-2.columns
+
+  .row
     .small-6.columns
       form(action='/beverageTypes/update', method='post', enctype='multipart/form-data')
         fieldset

@@ -22,7 +22,7 @@ app.use(initRoutes);
 app.use(express.static(__dirname + '/static'));
 app.use('/less', less(__dirname + '/less'));
 // the line below allows for transfers of large files, i.e. movies, etc.
-//app.use(express.bodyParser({limit: '5000mb'}));
+app.use(express.bodyParser());
 app.use(express.methodOverride());
 app.use(express.cookieParser());
 app.use(express.session({
