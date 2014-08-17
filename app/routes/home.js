@@ -77,7 +77,7 @@ exports.index = function(req, res){
                           machine.inService = false;
                         }
 
-                        console.log('STUFF GOING TO VIEWS: ', machine, beverageTypes, slotsLeft, currencyTypes, Currency.paperBillsAccepted);
+                        console.log('STUFF GOING TO VIEWS: ', machine, beverageTypes, slotsLeft, denominations, Currency.paperBillsAccepted);
 
                         res.render('home/index', {machine:machine, beverageTypes:beverageTypes, slotsLeft:slotsLeft,
                           denominationsAccepted: denominations, paperBillsAccepted:Currency.paperBillsAccepted});

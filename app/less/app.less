@@ -1,5 +1,6 @@
 @bg-color: rgba(2, 2, 2, 1);
 @screen-height: 40em;
+@white: rgba(200, 200, 200, .9);
 
 
 @font-face {
@@ -78,15 +79,24 @@ strong {
 
 .currency-container {
   text-align: center;
+  margin: 1em auto;
 }
 
 .currency {
   display: inline-block;
   min-height: 3em;
-  min-width: 5em;
+  min-width: 100%;
   background-size: contain;
   background-repeat: no-repeat;
-  margin: 1em;
+  background-position: center;
+  text-align: center;
+  margin: .5em auto;
+}
+
+.currency-in-wallet {
+  text-align: center;
+  margin: 0px auto;
+  color: @white;
 }
 
 .fiveDollarBill {
@@ -118,5 +128,5 @@ strong {
 .error-space {
   margin: 2em auto;
   background-color: rgba(150, 10, 10, .9);
-  color: rgba(200, 200, 200, .9);
+  color: @white;
 }

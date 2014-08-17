@@ -26,7 +26,8 @@ block content
             .row
               each denom in denominationsAccepted
                 .small-2.columns.currency-container
-                  .currency(class=denom.type, data-value=denom.value)
+                  .currency(class=denom.type, data-type=denom.type, data-value=denom.value)
+                  h5.currency-in-wallet(data-type=denom.type) 0
               each bill in paperBillsAccepted
                 .paperBillsAccepted.hidden(data-type=bill)
               each slot in slotsLeft
