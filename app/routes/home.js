@@ -34,7 +34,13 @@ exports.index = function(req, res){
                   var currencyTypes = Currency.denominationsAccepted;
                   var slotsLeft = [];
                   var overheadValue = 0;
+                  var denominations = [];
                   _.each(currencyTypes, function(type){
+
+                    // Create an array of currency objects with the name of the type and its value
+                    var denom = new Currency(type);
+                    denominations.push(denom);
+
                     Currency.slotsLeftByType(type, function(overhead){
                       // Create an object that will contain the type of currency, and how much space is reserved for it in the machine.
                       // Accrue value of slots left open, calculated by type, to make sure a beverage can still be purchased.
@@ -57,6 +63,7 @@ exports.index = function(req, res){
                         slot.overhead = overhead;
                         slotsLeft.push(slot);
                       }
+
                       iterator ++;
 
                       if(iterator === currencyTypes.length) {
@@ -73,7 +80,7 @@ exports.index = function(req, res){
                         console.log('STUFF GOING TO VIEWS: ', machine, beverageTypes, slotsLeft, currencyTypes, Currency.paperBillsAccepted);
 
                         res.render('home/index', {machine:machine, beverageTypes:beverageTypes, slotsLeft:slotsLeft,
-                          denominationsAccepted: currencyTypes, paperBillsAccepted:Currency.paperBillsAccepted});
+                          denominationsAccepted: denominations, paperBillsAccepted:Currency.paperBillsAccepted});
                       }
                     });
                   });

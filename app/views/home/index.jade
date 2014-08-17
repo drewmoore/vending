@@ -26,7 +26,7 @@ block content
             .row
               each denom in denominationsAccepted
                 .small-2.columns.currency-container
-                  .currency(class=denom)
+                  .currency(class=denom.type, data-value=denom.value)
               each bill in paperBillsAccepted
                 .paperBillsAccepted.hidden(data-type=bill)
               each slot in slotsLeft
