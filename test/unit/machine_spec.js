@@ -130,6 +130,7 @@ describe('Machine', function(){
       _.each(types, function(type){
         Currency.stockNewByType(type, 3, function(err, count){
           iterator ++;
+
           if(iterator === types.length){
             m1.makeChange(5, function(err, coinsDispensed){
               Currency.countByType('dollarCoin', function(err, dollarCoinCount){

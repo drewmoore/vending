@@ -2,47 +2,77 @@
 
   'use strict';
 
-  var CurrencyValue = {};
-  var PurchaseQueue = {};
+  var Currency = {
+    denominations : {},
+    slotsLeft : {}
+  };
+
+  var PurchaseQueue = {
+    currencies: {},
+    value: 0,
+    machineId: $($('#machine')[0]).attr('data-id')
+  };
 
   $(document).ready(initialize);
 
   function initialize(){
     $(document).foundation();
+    initializeCurrency();
+    initializePurchaseQueue();
     loadWallet();
     defineEventHandlers();
   }
 
-  function loadWallet(){
-    // Starts off every denomination in wallet with a specified count. Define global currency denomination values.
-    // Load Purchase Queue with initial values.
-    var bankForEach = 30;
+  function initializeCurrency(){
     var denominationDivs = $('.currency');
-
     _.each(denominationDivs, function(div){
+      // Define types of denominations accepted and their values.
       var type = $(div).attr('data-type');
-      var $countDisplay = $('.currency-in-wallet[data-type="' + type + '"]');
-      $countDisplay.text(bankForEach.toString());
-      CurrencyValue[type] = $(div).attr('data-value') - 0;
-      PurchaseQueue[type] = 0;
+      Currency.denominations[type] = {};
+      Currency.denominations[type].name = type;
+      Currency.denominations[type].value = $(div).attr('data-value') - 0;
+
+      // Define the types of money slots and their current limits.
+      if(isPaper(type)){
+        type = 'paperBill';
+      }
+      var $dataElement = $('.slots-left[data-type="' + type + '"]');
+      var overhead = parseInt($dataElement.attr('data-overhead'));
+      Currency.slotsLeft[type] = {};
+      Currency.slotsLeft[type].name = type;
+      Currency.slotsLeft[type].count = overhead;
+
     });
-    PurchaseQueue.value = 0;
+  }
+
+  function initializePurchaseQueue(){
+    _.each(Currency.denominations, function(denom){
+      PurchaseQueue.currencies[denom.name] = 0;
+    });
+  }
+
+  function loadWallet(){
+    // Starts off every denomination in wallet with a specified count.
+    var bankForEach = 30;
+    _.each(Currency.denominations, function(denom){
+      adjustWalletCount(denom.name, bankForEach);
+    });
   }
 
   function defineEventHandlers(){
     $('.currency').click(currencyClick);
+    $('#coin-return').click(coinReturnClick);
   }
 
   function currencyClick(){
     var self = this;
     var type = $(self).attr('data-type');
-    var $element = $('.currency-in-wallet[data-type="' + type + '"]');
-    var domCount = parseInt($element.text());
 
     // Determine if there is sufficient space in machine to add a given coin or bill and that the user has sufficient money in wallet.
     // Adjust coin count display.
-    if(bankHasOverhead(type) && domCount > 0){
-      decrementWallet(type, $element, domCount);
+    var walletCount = getWalletCount(type);
+    if(bankHasOverhead(type) && walletCount > 0){
+      adjustWalletCount(type, walletCount - 1);
       incrementPurchaseQueue(type);
       adjustCoinDisplay(PurchaseQueue.value);
     } else if(!bankHasOverhead(type)){
@@ -54,39 +84,29 @@
       if(isPaper(type)){
         type = 'paperBill';
       }
-      var $dataElement = $('.slots-left[data-type="' + type + '"]');
-      var overhead = parseInt($dataElement.attr('data-overhead'));
+      var overhead = Currency.slotsLeft[type].count;
       if(overhead >= 1){
         return true;
       } else {
         return false;
       }
-
-      console.log('bankHasOverhead called: ', type, $dataElement, overhead, '\n');
-    }
-
-    function decrementWallet(type, $element, domCount){
-      // Decrement wallet by denomination. Adjust overhead by denomination. Add to purchase queue by denomination.
-      var $dataElement;
-      if(isPaper(type)){
-        $dataElement = $('.slots-left[data-type="paperBill"]');
-      } else {
-        $dataElement = $('.slots-left[data-type="' + type + '"]');
-      }
-      var overhead = parseInt($dataElement.attr('data-overhead'));
-      domCount -= 1;
-      overhead -= 1;
-      $element.text(domCount.toString());
-      $dataElement.attr('data-overhead', overhead.toString());
     }
 
     function incrementPurchaseQueue(type) {
-      PurchaseQueue[type] ++;
-      PurchaseQueue.value += (CurrencyValue[type] - 0);
+      PurchaseQueue.currencies[type] ++;
+      PurchaseQueue.value += (Currency.denominations[type].value - 0);
+    }
+  }
+
+  function coinReturnClick(){
+    var url = '/machines/make-change/';
+    $.ajax({url:url, type:'post', data: PurchaseQueue, success:getChange});
+
+    function getChange(data){
+
+      console.log('getChange: ', data);
     }
 
-
-    console.log('currencyClick called: ', self, type, CurrencyValue, PurchaseQueue, '\n');
   }
 
   function isPaper(type){
@@ -96,8 +116,20 @@
     } else {
       return true;
     }
+  }
 
-    console.log('isPaper called: ', type, $dataElement, '\n');
+  function adjustWalletCount(denom, toIncrement){
+    var currentCount = getWalletCount(denom);
+    var newCount = currentCount += toIncrement;
+    var $countDisplay = $('.currency-in-wallet[data-type="' + denom + '"]');
+
+    $countDisplay.text(newCount.toString());
+  }
+
+  function getWalletCount(denom){
+    var $countDisplay = $('.currency-in-wallet[data-type="' + denom + '"]');
+    var currentCount = parseInt($countDisplay.text());
+    return currentCount;
   }
 
   function adjustCoinDisplay(input){
@@ -110,8 +142,6 @@
     }
     $coinDisplay.text(newText);
   }
-
-
 
 })();
 

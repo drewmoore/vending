@@ -1,9 +1,0 @@
-extends ../shared/template
-
-block content
-  h1= sampleModel.whatever
-  img(src=sampleModel.image)
-  if user
-    a(href='/sampleModels/edit/' + sampleModel._id) Edit
-    form(action='/sampleModels/delete/' + sampleModel._id, method='post')
-      button Delete

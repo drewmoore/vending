@@ -5,16 +5,6 @@ var Beverage = require('../models/beverage');
 var Currency = require('../models/currency');
 var _ = require('lodash');
 
-/*
-exports.index = function(req, res){
-  SampleModel.index(function(sampleModels){
-    User.findById(req.session.userId, function(err, user){
-      res.render('sampleModels/index', {title: 'All Sample Models', sampleModels:sampleModels, user:user});
-    });
-  });
-};
-*/
-
 exports.createPage = function(req, res){
   var currencies = [];
   _.each(Currency.denominationsAccepted, function(denom){
@@ -85,7 +75,6 @@ exports.edit = function(req, res){
         });
       }
     });
-
   });
 };
 
@@ -128,22 +117,26 @@ exports.summary = function(req, res){
   });
 };
 
-/*
-exports.remove = function(req, res){
-  SampleModel.destroy(req.params.id, function(err, count){
-    res.redirect('/sampleModels');
-  });
-};
+exports.makeChange = function(req, res){
+  var purchaseQueue = req.body;
+  var types = Currency.denominationsAccepted;
+  var iteration = 0;
+  Machine.findById(purchaseQueue.machineId, function(machine){
+    var m1 = new Machine(machine.price);
+    _.each(types, function(type){
+      var quantity = purchaseQueue.currencies[type] * 1;
+      Currency.stockNewByType(type, quantity, function(err, count){
+        iteration ++;
+        if(iteration === types.length){
+          var totalIn = purchaseQueue.value * 1;
 
-exports.show = function(req, res){
-  User.findById(req.session.userId, function(err, user){
-    SampleModel.findById(req.params.id, function(sampleModel){
-      if(sampleModel){
-        res.render('sampleModels/show', {title:'Sample Model Show', sampleModel:sampleModel, user:user});
-      } else {
-        res.render('sampleModels/', {title:'Sample Models', err:'sampleModel not found', user:user});
-      }
+          console.log('MAKE CHANGE: TOTAL IN: ', totalIn, purchaseQueue.currencies);
+
+          m1.makeChange(totalIn, function(err, coinsDispensed, totalChange){
+            res.send({data:coinsDispensed, totalChange:totalChange});
+          });
+        }
+      });
     });
   });
 };
-*/
