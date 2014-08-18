@@ -29,9 +29,9 @@ block content
                   .currency(class=denom.type, data-type=denom.type, data-value=denom.value)
                   h5.currency-in-wallet(data-type=denom.type) 0
               each bill in paperBillsAccepted
-                .paperBillsAccepted.hidden(data-type=bill)
+                .paper-bills-accepted.hidden(data-type=bill)
               each slot in slotsLeft
-                .slotsLeft.hidden(data-type=slot.type, data-id-overhead=slot.overhead)
+                .slots-left.hidden(data-type=slot.type, data-overhead=slot.overhead)
 
 
 
