@@ -195,6 +195,61 @@ describe('Machine', function(){
         });
       });
     });
+    it('should provide accurate change for any purchase (price: .75, 1 quarter, 2 dimes, 3 nickels)', function(done){
+      var m1 = new Machine(0.75);
+      Currency.stockNewByType('dime', 2, function(err, count){
+        Currency.stockNewByType('nickel', 3, function(err, count){
+          Currency.stockNewByType('quarter', 1, function(err, count){
+            m1.makeChange(1.25, function(err, coinsDispensed, totalDispensed){
+              Currency.countByType('quarter', function(err, quarterCount){
+                Currency.countByType('dime', function(err, dimeCount){
+                  Currency.countByType('nickel', function(err, nickelCount){
+                    expect(coinsDispensed.dollarCoin).to.equal(0);
+                    expect(coinsDispensed.quarter).to.equal(1);
+                    expect(coinsDispensed.dime).to.equal(2);
+                    expect(coinsDispensed.nickel).to.equal(1);
+                    expect(totalDispensed).to.equal(0.50);
+                    expect(quarterCount).to.equal(0);
+                    expect(dimeCount).to.equal(0);
+                    expect(nickelCount).to.equal(2);
+                    done();
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+    it('should provide accurate change for any purchase (price: .85, 1 quarter, 2 dimes, 3 nickels)', function(done){
+
+      console.log('\n \n');
+
+      var m1 = new Machine(.85);
+      Currency.stockNewByType('dime', 2, function(err, count){
+        Currency.stockNewByType('nickel', 3, function(err, count){
+          Currency.stockNewByType('quarter', 1, function(err, count){
+            m1.makeChange(.95, function(err, coinsDispensed, totalDispensed){
+              Currency.countByType('quarter', function(err, quarterCount){
+                Currency.countByType('dime', function(err, dimeCount){
+                  Currency.countByType('nickel', function(err, nickelCount){
+                    expect(coinsDispensed.dollarCoin).to.equal(0);
+                    expect(coinsDispensed.quarter).to.equal(0);
+                    expect(coinsDispensed.dime).to.equal(1);
+                    expect(coinsDispensed.nickel).to.equal(0);
+                    expect(totalDispensed).to.equal(0.10);
+                    expect(quarterCount).to.equal(1);
+                    expect(dimeCount).to.equal(1);
+                    expect(nickelCount).to.equal(3);
+                    done();
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+    });
   });
   describe('vend', function(){
     it('should complete all processes necessary to vend a beverage, track in the database, save and return the state of the machine', function(done){

@@ -66,7 +66,7 @@ Currency.totalByType = function(type, fn){
     var total = 0;
     _.each(records, function(record){
       total += record.value;
-      total = (Math.ceil((total * 100)) / 100);
+      total = (Math.round((total * 100)) / 100);
     });
     fn(err, total);
   });

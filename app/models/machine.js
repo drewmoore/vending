@@ -107,8 +107,13 @@ Machine.prototype.canMakeChange = function(fn){
 
 Machine.prototype.makeChange = function(moneyIn, fn){
   var price = this.price;
-  var changeNeeded = moneyIn - price;
-  var moneyOut = 0;
+
+  //      totalChange = ( ( Math.round(totalChange * 100) + Math.round(type.value * 100) )/ 100);
+
+  var changeNeeded = (Math.round(moneyIn * 100) - Math.round(price * 100)) / 100;
+
+  //var moneyOut = 0;
+
   var coinsDispensed = {};
   var totalChange = 0.00;
   var currencies = [];
@@ -119,23 +124,42 @@ Machine.prototype.makeChange = function(moneyIn, fn){
     }
   });
   var types = _.sortBy(currencies, 'value').reverse();
+
+  _.each(types, function(type){
+    coinsDispensed[type.type] = 0;
+  });
+
+  console.log('MODEL MAKE CHANGE: ', moneyIn, price, changeNeeded, types);
+
   var iterator = 0;
 
   getTotalsByType();
+
   function getTotalsByType(){
 
+    // Iterate through the different coin denominations. Check if there are enough in machine to make change.
+    // If there is not enough to make change, call function again recursively to test the next coin denomination.
+    // If there is enough to make change, call a function that will dispense a given coin one at a time until the amount of change needed
+    // is less than the value of the denomination.
     var type = types[iterator];
     Currency.totalByType(type.type, function(err, totalByType){
       coinsDispensed[type.type] = 0;
-      if(totalByType >= type.value){
+
+      if((totalByType >= type.value) && (type.value <= changeNeeded)){
+
+        console.log('MODEL MAKE CHANGE: GET TOTALS BY TYPE: ', type.type, totalByType, type.value, changeNeeded);
+
+
         dispenseCoins(type, totalByType, function(err){
+
           iterator ++;
-          if(iterator === types.length){
+          if((iterator === types.length) || (totalChange >= changeNeeded)){
             fn(err, coinsDispensed, totalChange);
           } else {
             getTotalsByType();
           }
         });
+
       } else {
         iterator ++;
         if(iterator === types.length){
@@ -148,15 +172,26 @@ Machine.prototype.makeChange = function(moneyIn, fn){
   }
 
   function dispenseCoins(type, totalByType, dispenseCallBack){
+
+    console.log('MODEL MAKE CHANGE: GET TOTALS BY TYPE: DISPENSE COINS: ', type, totalByType);
+
     Currency.dispenseOneByType(type.type, function(err, count){
-      if(err || moneyOut >= changeNeeded){
+
+      console.log('MODEL MAKE CHANGE: GET TOTALS BY TYPE: DISPENSE COINS: DISPENSE ONE BY TYPE: ', type.type, err, count);
+
+      if(err){
         dispenseCallBack(err);
       } else {
         coinsDispensed[type.type] ++;
-        totalChange += type.value;
-        moneyOut += type.value * count;
+
+        totalChange = ( ( Math.round(totalChange * 100) + Math.round(type.value * 100) )/ 100);
+
+        console.log('MODEL MAKE CHANGE: GET TOTALS BY TYPE: DISPENSE COINS: DISPENSE ONE BY TYPE: ELSE: ', coinsDispensed[type.type], totalChange, changeNeeded);
+
+        //moneyOut += (type.value * count);
+
         totalByType -= type.value;
-        if(moneyOut >= changeNeeded){
+        if(totalChange >= changeNeeded){
           dispenseCallBack(err);
         } else {
           dispenseCoins(type, totalByType, dispenseCallBack);
