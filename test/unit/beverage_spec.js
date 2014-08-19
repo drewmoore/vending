@@ -2,8 +2,6 @@
 
 process.env.DBNAME = 'vending-test';
 var expect = require('chai').expect;
-var fs = require('fs');
-var exec = require('child_process').exec;
 var Mongo = require('mongodb');
 var Beverage;
 var BeverageType;

@@ -2,8 +2,6 @@
 
 process.env.DBNAME = 'vending-test';
 var expect = require('chai').expect;
-var fs = require('fs');
-var exec = require('child_process').exec;
 var Mongo = require('mongodb');
 var _ = require('lodash');
 var Machine;
@@ -31,6 +29,8 @@ describe('Machine', function(){
      * CAUTION: Running these tests WILL delete all the images on your website. Proceed with caution, and be sure to back up all data
      * before commenting out this code!!
      *
+    var fs = require('fs');
+    var exec = require('child_process').exec;
     var testdir = __dirname + '/../../app/static/img/machines';
     var cmd = 'rm -rf ' + testdir;
     exec(cmd, function(){
@@ -234,11 +234,11 @@ describe('Machine', function(){
       });
     });
     it('should provide accurate change for any purchase (price: .85, 1 quarter, 2 dimes, 3 nickels)', function(done){
-      var m1 = new Machine(.85);
+      var m1 = new Machine(0.85);
       Currency.stockNewByType('dime', 2, function(err, count){
         Currency.stockNewByType('nickel', 3, function(err, count){
           Currency.stockNewByType('quarter', 1, function(err, count){
-            m1.makeChange(.95, function(err, coinsDispensed, totalDispensed){
+            m1.makeChange(0.95, function(err, coinsDispensed, totalDispensed){
               Currency.countByType('quarter', function(err, quarterCount){
                 Currency.countByType('dime', function(err, dimeCount){
                   Currency.countByType('nickel', function(err, nickelCount){

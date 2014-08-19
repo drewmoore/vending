@@ -2,8 +2,6 @@
 
 process.env.DBNAME = 'vending-test';
 var expect = require('chai').expect;
-var fs = require('fs');
-var exec = require('child_process').exec;
 var Mongo = require('mongodb');
 var Beverage;
 var BeverageType;
@@ -26,6 +24,8 @@ describe('BeverageType', function(){
      * CAUTION: Running these tests WILL delete all the images on your website. Proceed with caution, and be sure to back up all data
      * before commenting out this code!!
      *
+    var fs = require('fs');
+    var exec = require('child_process').exec;
     var testdir = __dirname + '/../../app/static/img/beverageTypes';
     var cmd = 'rm -rf ' + testdir;
     exec(cmd, function(){
@@ -60,8 +60,8 @@ describe('BeverageType', function(){
       var b2 = new BeverageType('Cheerwine');
       b1.insert(function(err, records){
         b2.insert(function(err, records){
-          expect(b2._id).to.be.undefined;
-          expect(records).to.be.undefined;
+          expect(b2._id).to.equal(undefined);
+          expect(records).to.equal(undefined);
           expect(typeof err).to.deep.equal('string');
           done();
         });
@@ -83,7 +83,7 @@ describe('BeverageType', function(){
                 b6.insert(function(err, records6){
                   b7.insert(function(err, records7){
                     expect(records6[0].name).to.equal('Dr. Pepper');
-                    expect(records7).to.be.undefined;
+                    expect(records7).to.equal(undefined);
                     expect(typeof err).to.deep.equal('string');
                     done();
                   });
