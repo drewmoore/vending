@@ -104,7 +104,7 @@
   }
 
   function coinReturnClick(){
-    var url = '/machines/make-change/';
+    var url = '/machines/return-coins/';
     $.ajax({url:url, type:'post', data: PurchaseQueue, success:getChange});
 
     function getChange(data){

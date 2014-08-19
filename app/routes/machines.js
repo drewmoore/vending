@@ -117,6 +117,30 @@ exports.summary = function(req, res){
   });
 };
 
+exports.returnCoins = function(req, res){
+  // Uses the Machine Model's #makeChange function, but using a 'free' machine instance, thereby returning the user's total input.
+  var purchaseQueue = req.body;
+  var types = Currency.denominationsAccepted;
+  var iteration = 0;
+  var m1 = new Machine(0);
+  _.each(types, function(type){
+    var quantity = purchaseQueue.currencies[type] * 1;
+    Currency.stockNewByType(type, quantity, function(err, count){
+      iteration ++;
+      if(iteration === types.length){
+        var totalIn = purchaseQueue.value * 1;
+
+        console.log('RETURN COINS CHANGE: TOTAL IN: ', totalIn, purchaseQueue.currencies);
+
+        m1.makeChange(totalIn, function(err, coinsDispensed, totalChange){
+          res.send({data:coinsDispensed, totalChange:totalChange});
+        });
+      }
+    });
+  });
+};
+
+/*
 exports.makeChange = function(req, res){
   var purchaseQueue = req.body;
   var types = Currency.denominationsAccepted;
@@ -140,3 +164,4 @@ exports.makeChange = function(req, res){
     });
   });
 };
+*/
