@@ -72,9 +72,10 @@
     // Adjust coin count display.
     var walletCount = getWalletCount(type);
     if(bankHasOverhead(type) && walletCount > 0){
-      adjustWalletCount(type, walletCount - 1);
+      adjustWalletCount(type, -1);
       incrementPurchaseQueue(type);
       adjustCoinDisplay(PurchaseQueue.value);
+      Currency.slotsLeft[type].count -= 1;
     } else if(!bankHasOverhead(type)){
       adjustCoinDisplay(type + ' slot full');
     }
