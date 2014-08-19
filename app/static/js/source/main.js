@@ -156,6 +156,7 @@
     var $imageElement = $('<img>');
     var url = '/machines/make-purchase/';
 
+    PurchaseQueue.beverageTypeId = beverageTypeId;
     //$.ajax({url:url, type:'post', data: PurchaseQueue, success:getChange});
     $.ajax({url:url, type:'post', data: PurchaseQueue, success:function(incoming){
 
@@ -217,6 +218,9 @@
   }
 
   function getChange(data){
+
+    console.log('getChange: ', data);
+
     _.each(data.coinsDispensed, function(denom){
       adjustWalletCount(denom.name, denom.count);
     });

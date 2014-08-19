@@ -147,10 +147,42 @@ exports.returnCoins = function(req, res){
 };
 
 exports.makePurchase = function(req, res){
+  var purchaseQueue = req.body;
+  var types = Currency.denominationsAccepted;
+  var machineId = purchaseQueue.machineId;
+  var beverageTypeId = purchaseQueue.beverageTypeId;
+  var m1;
+  var currencyIn = [];
+  Machine.findById(machineId, function(machine){
+    m1 = new Machine(machine.price);
+    BeverageType.findById(beverageTypeId, function(err, beverageType){
 
-  console.log('MAKE PURCHASE: ');
+      //var currencyIn = [{'type': 'dollarBill', 'quantity': 1}]
 
-  res.send('Makin purchases yo!');
+      _.each(types, function(type){
+        var c = {};
+        c.type = type;
+        c.quantity = purchaseQueue.currencies[type];
+        currencyIn.push(c);
+      });
+
+      m1.vend(beverageType.name, currencyIn, function(vendErr, vended){
+
+        self.getStateOfMachine(req, function(stateOfMachine, err){
+
+
+
+
+          console.log('MAKE PURCHASE: ', purchaseQueue, stateOfMachine);
+
+          res.send({vended:vended, stateOfMachine:stateOfMachine});
+
+
+        });
+
+      });
+    });
+  });
 };
 
 exports.getStateOfMachine = function(req, fn) {

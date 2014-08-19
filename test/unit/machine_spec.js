@@ -260,14 +260,16 @@ describe('Machine', function(){
       });
     });
   });
-  describe('vend', function(){
+  describe('#vend', function(){
     it('should complete all processes necessary to vend a beverage, track in the database, save and return the state of the machine', function(done){
       var m1 = new Machine(0.75);
       Beverage.stockNew('Cheerwine', 10, function(err, count){
         Currency.stockNewByType('dime', 2, function(err, count){
           Currency.stockNewByType('nickel', 3, function(err, count){
             var currencyIn = [{'type': 'dollarBill', 'quantity': 1}];
+
             m1.vend('Cheerwine', currencyIn, function(vendErr, vended){
+
               Beverage.countByProductName('Cheerwine', function(err, beverageCount){
                 Currency.countByType('dime', function(err, dimeCount){
                   Currency.countByType('nickel', function(err, nickelCount){
