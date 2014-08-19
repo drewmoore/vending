@@ -147,8 +147,8 @@ describe('Machine', function(){
             m1.makeChange(5, function(err, coinsDispensed){
               Currency.countByType('dollarCoin', function(err, dollarCoinCount){
                 Currency.countByType('quarter', function(err, quarterCount){
-                  expect(coinsDispensed.dollarCoin).to.equal(3);
-                  expect(coinsDispensed.quarter).to.equal(2);
+                  expect(coinsDispensed.dollarCoin.count).to.equal(3);
+                  expect(coinsDispensed.quarter.count).to.equal(2);
                   expect(dollarCoinCount).to.equal(0);
                   expect(quarterCount).to.equal(1);
                   done();
@@ -168,8 +168,8 @@ describe('Machine', function(){
               Currency.countByType('quarter', function(err, quarterCount){
                 Currency.countByType('dime', function(err, dimeCount){
                   Currency.countByType('nickel', function(err, nickelCount){
-                    expect(coinsDispensed.dollarCoin).to.equal(0);
-                    expect(coinsDispensed.quarter).to.equal(13);
+                    expect(coinsDispensed.dollarCoin.count).to.equal(0);
+                    expect(coinsDispensed.quarter.count).to.equal(13);
                     expect(totalDispensed).to.equal(3.75);
                     expect(quarterCount).to.equal(0);
                     expect(dimeCount).to.equal(0);
@@ -191,10 +191,10 @@ describe('Machine', function(){
             Currency.countByType('quarter', function(err, quarterCount){
               Currency.countByType('dime', function(err, dimeCount){
                 Currency.countByType('nickel', function(err, nickelCount){
-                  expect(coinsDispensed.dollarCoin).to.equal(0);
-                  expect(coinsDispensed.quarter).to.equal(0);
-                  expect(coinsDispensed.dime).to.equal(2);
-                  expect(coinsDispensed.nickel).to.equal(1);
+                  expect(coinsDispensed.dollarCoin.count).to.equal(0);
+                  expect(coinsDispensed.quarter.count).to.equal(0);
+                  expect(coinsDispensed.dime.count).to.equal(2);
+                  expect(coinsDispensed.nickel.count).to.equal(1);
                   expect(totalDispensed).to.equal(0.25);
                   expect(quarterCount).to.equal(0);
                   expect(dimeCount).to.equal(0);
@@ -216,10 +216,10 @@ describe('Machine', function(){
               Currency.countByType('quarter', function(err, quarterCount){
                 Currency.countByType('dime', function(err, dimeCount){
                   Currency.countByType('nickel', function(err, nickelCount){
-                    expect(coinsDispensed.dollarCoin).to.equal(0);
-                    expect(coinsDispensed.quarter).to.equal(1);
-                    expect(coinsDispensed.dime).to.equal(2);
-                    expect(coinsDispensed.nickel).to.equal(1);
+                    expect(coinsDispensed.dollarCoin.count).to.equal(0);
+                    expect(coinsDispensed.quarter.count).to.equal(1);
+                    expect(coinsDispensed.dime.count).to.equal(2);
+                    expect(coinsDispensed.nickel.count).to.equal(1);
                     expect(totalDispensed).to.equal(0.50);
                     expect(quarterCount).to.equal(0);
                     expect(dimeCount).to.equal(0);
@@ -242,10 +242,10 @@ describe('Machine', function(){
               Currency.countByType('quarter', function(err, quarterCount){
                 Currency.countByType('dime', function(err, dimeCount){
                   Currency.countByType('nickel', function(err, nickelCount){
-                    expect(coinsDispensed.dollarCoin).to.equal(0);
-                    expect(coinsDispensed.quarter).to.equal(0);
-                    expect(coinsDispensed.dime).to.equal(1);
-                    expect(coinsDispensed.nickel).to.equal(0);
+                    expect(coinsDispensed.dollarCoin.count).to.equal(0);
+                    expect(coinsDispensed.quarter.count).to.equal(0);
+                    expect(coinsDispensed.dime.count).to.equal(1);
+                    expect(coinsDispensed.nickel.count).to.equal(0);
                     expect(totalDispensed).to.equal(0.10);
                     expect(quarterCount).to.equal(1);
                     expect(dimeCount).to.equal(1);
@@ -274,8 +274,8 @@ describe('Machine', function(){
                     Transaction.findByBeverageType('Cheerwine', function(err, transactions){
                       expect(vendErr).to.equal(null);
                       expect(vended.beverageType).to.equal('Cheerwine');
-                      expect(vended.coinsDispensed.dime).to.equal(2);
-                      expect(vended.coinsDispensed.nickel).to.equal(1);
+                      expect(vended.coinsDispensed.dime.count).to.equal(2);
+                      expect(vended.coinsDispensed.nickel.count).to.equal(1);
                       expect(vended.currencyInTotal).to.equal(1);
                       expect(vended.totalChange).to.equal(0.25);
                       expect(beverageCount).to.equal(9);
@@ -283,7 +283,7 @@ describe('Machine', function(){
                       expect(nickelCount).to.equal(2);
                       expect(transactions.length).to.equal(1);
                       expect(transactions[0].beverageType).to.equal('Cheerwine');
-                      expect(transactions[0].coinsDispensed.dime).to.equal(2);
+                      expect(transactions[0].coinsDispensed.dime.count).to.equal(2);
                       expect(transactions[0].totalChange).to.equal(0.25);
                       expect(transactions[0].currencyInTotal).to.equal(1);
                       done();

@@ -130,7 +130,7 @@ exports.returnCoins = function(req, res){
       if(iteration === types.length){
         var totalIn = purchaseQueue.value * 1;
         m1.makeChange(totalIn, function(err, coinsDispensed, totalChange){
-          res.send({data:coinsDispensed, totalChange:totalChange});
+          res.send({coinsDispensed:coinsDispensed, totalChange:totalChange});
         });
       }
     });

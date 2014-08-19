@@ -126,11 +126,6 @@
     var url = '/machines/return-coins/';
     $.ajax({url:url, type:'post', data: PurchaseQueue, success:getChange});
 
-    function getChange(data){
-
-      console.log('getChange: ', data);
-    }
-
   }
 
   function isPaper(type){
@@ -175,6 +170,12 @@
         $dom.hide();
       });
     }
+  }
+
+  function getChange(data){
+    _.each(data.coinsDispensed, function(denom){
+      adjustWalletCount(denom.name, denom.count);
+    });
   }
 
 })();

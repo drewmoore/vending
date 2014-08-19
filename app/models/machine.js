@@ -126,7 +126,9 @@ Machine.prototype.makeChange = function(moneyIn, fn){
   var types = _.sortBy(currencies, 'value').reverse();
 
   _.each(types, function(type){
-    coinsDispensed[type.type] = 0;
+    coinsDispensed[type.type] = {};
+    coinsDispensed[type.type].name = type.type;
+    coinsDispensed[type.type].count = 0;
   });
 
   console.log('MODEL MAKE CHANGE: ', moneyIn, price, changeNeeded, types);
@@ -143,7 +145,7 @@ Machine.prototype.makeChange = function(moneyIn, fn){
     // is less than the value of the denomination.
     var type = types[iterator];
     Currency.totalByType(type.type, function(err, totalByType){
-      coinsDispensed[type.type] = 0;
+      coinsDispensed[type.type].count = 0;
 
       if((totalByType >= type.value) && (type.value <= changeNeeded)){
 
@@ -182,7 +184,7 @@ Machine.prototype.makeChange = function(moneyIn, fn){
       if(err){
         dispenseCallBack(err);
       } else {
-        coinsDispensed[type.type] ++;
+        coinsDispensed[type.type].count ++;
 
         totalChange = ( ( Math.round(totalChange * 100) + Math.round(type.value * 100) )/ 100);
 
