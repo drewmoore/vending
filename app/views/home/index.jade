@@ -19,7 +19,10 @@ block content
                   h5 It's out
           .small-4.columns
             #coin-display
-              h1= coinCount
+                strong#coin-count= coinCount
+                strong#coin-display-divider /
+                strong#coin-display-price= machine.price
+                strong#coin-display-message
             .clear
             img#coin-return(src='/img/coin-return.png')
         .row

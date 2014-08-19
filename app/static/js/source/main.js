@@ -157,14 +157,24 @@
   }
 
   function adjustCoinDisplay(input){
-    var $coinDisplay = $($('#coin-display > h1')[0]);
-    var newText = '';
+    var $coinCount = $($('#coin-count')[0]);
+    var $coinDisplayDivider = $($('#coin-display-divider')[0]);
+    var $coinDisplayPrice = $($('#coin-display-price')[0]);
+    var doms = [$coinDisplayDivider, $coinDisplayPrice];
+
     if((typeof input) !== 'string'){
-      newText = input.toFixed(2);
+      $coinCount.text(input.toFixed(2));
+      $coinDisplayDivider.text('|');
+      $coinDisplayPrice.text(Machine.price.toFixed(2));
+      _.each(doms, function($dom){
+        $dom.show();
+      });
     } else {
-      newText = input.toUpperCase();
+      $coinCount.text(input.toUpperCase());
+      _.each(doms, function($dom){
+        $dom.hide();
+      });
     }
-    $coinDisplay.text(newText);
   }
 
 })();
