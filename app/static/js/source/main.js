@@ -53,6 +53,7 @@
   }
 
   function initializePurchaseQueue(){
+    PurchaseQueue.value = 0;
     _.each(Currency.denominations, function(denom){
       PurchaseQueue.currencies[denom.name] = 0;
     });
@@ -125,7 +126,6 @@
   function coinReturnClick(){
     var url = '/machines/return-coins/';
     $.ajax({url:url, type:'post', data: PurchaseQueue, success:getChange});
-
   }
 
   function isPaper(type){
@@ -175,6 +175,11 @@
   function getChange(data){
     _.each(data.coinsDispensed, function(denom){
       adjustWalletCount(denom.name, denom.count);
+    });
+    initializePurchaseQueue();
+    adjustCoinDisplay(0);
+    _.each(data.stateOfMachine.slotsLeft, function(denom){
+      Currency.slotsLeft[denom.type].count = denom.overhead;
     });
   }
 
