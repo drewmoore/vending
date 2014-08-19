@@ -188,10 +188,11 @@ Machine.prototype.makeChange = function(moneyIn, fn){
 
         console.log('MODEL MAKE CHANGE: GET TOTALS BY TYPE: DISPENSE COINS: DISPENSE ONE BY TYPE: ELSE: ', coinsDispensed[type.type], totalChange, changeNeeded);
 
-        //moneyOut += (type.value * count);
-
         totalByType -= type.value;
-        if(totalChange >= changeNeeded){
+
+        console.log('\n \n  IS THIS THE SMOKING GUN?: ', changeNeeded, totalChange, (changeNeeded - totalChange),'\n \n');
+
+        if(totalChange >= changeNeeded || (((changeNeeded * 100) - Math.round(totalChange * 100)) / 100) < type.value){
           dispenseCallBack(err);
         } else {
           dispenseCoins(type, totalByType, dispenseCallBack);

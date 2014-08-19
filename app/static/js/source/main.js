@@ -75,7 +75,11 @@
       adjustWalletCount(type, -1);
       incrementPurchaseQueue(type);
       adjustCoinDisplay(PurchaseQueue.value);
-      Currency.slotsLeft[type].count -= 1;
+      if(isPaper(type)){
+        Currency.slotsLeft.paperBill.count -= 1;
+      } else {
+        Currency.slotsLeft[type].count -= 1;
+      }
     } else if(!bankHasOverhead(type)){
       adjustCoinDisplay(type + ' slot full');
     }
