@@ -19,15 +19,8 @@ describe('Beverage', function(){
     });
   });
   beforeEach(function(done){
-    var testdir = __dirname + '/../../app/static/img/beverages';
-    var cmd = 'rm -rf ' + testdir;
-    exec(cmd, function(){
-      var origfile = __dirname + '/../fixtures/test.jpg';
-      var copyfile = __dirname + '/../fixtures/test-copy.jpg';
-      fs.createReadStream(origfile).pipe(fs.createWriteStream(copyfile));
-      global.nss.db.dropDatabase(function(err, result){
-        done();
-      });
+    global.nss.db.dropDatabase(function(err, result){
+      done();
     });
   });
   describe('new', function(){

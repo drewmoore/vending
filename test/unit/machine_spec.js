@@ -24,6 +24,13 @@ describe('Machine', function(){
     });
   });
   beforeEach(function(done){
+    global.nss.db.dropDatabase(function(err, result){
+      done();
+    });
+    /* To test the app's ability to add/update images, replace the above code with the code below, and comment out the #addImage test below.
+     * CAUTION: Running these tests WILL delete all the images on your website. Proceed with caution, and be sure to back up all data
+     * before commenting out this code!!
+     *
     var testdir = __dirname + '/../../app/static/img/machines';
     var cmd = 'rm -rf ' + testdir;
     exec(cmd, function(){
@@ -34,6 +41,7 @@ describe('Machine', function(){
         done();
       });
     });
+    */
   });
   describe('new', function(){
     it('should create a new Machine object', function(done){
@@ -68,6 +76,9 @@ describe('Machine', function(){
       });
     });
   });
+  /* Only uncomment if necessary to test new or revised functionality. As stated above, these tests WILL destroy website data. Only proceed
+   * if a backup copy has been made.
+   *
   describe('#addImage', function(){
     it('should add an image', function(done){
       var m1 = new Machine(0.75);
@@ -78,6 +89,7 @@ describe('Machine', function(){
       });
     });
   });
+  */
   describe('#update', function(){
     it('should update a Machine info in the database', function(done){
       var m1 = new Machine(0.75);
@@ -222,9 +234,6 @@ describe('Machine', function(){
       });
     });
     it('should provide accurate change for any purchase (price: .85, 1 quarter, 2 dimes, 3 nickels)', function(done){
-
-      console.log('\n \n');
-
       var m1 = new Machine(.85);
       Currency.stockNewByType('dime', 2, function(err, count){
         Currency.stockNewByType('nickel', 3, function(err, count){

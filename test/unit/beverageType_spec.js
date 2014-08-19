@@ -19,6 +19,13 @@ describe('BeverageType', function(){
     });
   });
   beforeEach(function(done){
+    global.nss.db.dropDatabase(function(err, result){
+      done();
+    });
+    /* To test the app's ability to add/update images, replace the above code with the code below, and comment out the #addImage test below.
+     * CAUTION: Running these tests WILL delete all the images on your website. Proceed with caution, and be sure to back up all data
+     * before commenting out this code!!
+     *
     var testdir = __dirname + '/../../app/static/img/beverageTypes';
     var cmd = 'rm -rf ' + testdir;
     exec(cmd, function(){
@@ -29,6 +36,7 @@ describe('BeverageType', function(){
         done();
       });
     });
+    */
   });
   describe('new', function(){
     it('should create a new BeverageType object', function(done){
@@ -129,6 +137,9 @@ describe('BeverageType', function(){
       });
     });
   });
+  /* Only uncomment if necessary to test new or revised functionality. As stated above, these tests WILL destroy website data. Only proceed
+   * if a backup copy has been made.
+   *
   describe('#addImage', function(){
     it('should add/update an image', function(done){
       var b1 = new BeverageType('Cheerwine');
@@ -141,6 +152,7 @@ describe('BeverageType', function(){
       });
     });
   });
+  */
   describe('#changeName', function(){
     it('should change the name of a beverage type in the database', function(done){
       var b1 = new BeverageType('Cheerwine');
