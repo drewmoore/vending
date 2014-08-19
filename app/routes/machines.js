@@ -129,9 +129,6 @@ exports.returnCoins = function(req, res){
       iteration ++;
       if(iteration === types.length){
         var totalIn = purchaseQueue.value * 1;
-
-        console.log('RETURN COINS CHANGE: TOTAL IN: ', totalIn, purchaseQueue.currencies);
-
         m1.makeChange(totalIn, function(err, coinsDispensed, totalChange){
           res.send({data:coinsDispensed, totalChange:totalChange});
         });
@@ -140,28 +137,3 @@ exports.returnCoins = function(req, res){
   });
 };
 
-/*
-exports.makeChange = function(req, res){
-  var purchaseQueue = req.body;
-  var types = Currency.denominationsAccepted;
-  var iteration = 0;
-  Machine.findById(purchaseQueue.machineId, function(machine){
-    var m1 = new Machine(machine.price);
-    _.each(types, function(type){
-      var quantity = purchaseQueue.currencies[type] * 1;
-      Currency.stockNewByType(type, quantity, function(err, count){
-        iteration ++;
-        if(iteration === types.length){
-          var totalIn = purchaseQueue.value * 1;
-
-          console.log('MAKE CHANGE: TOTAL IN: ', totalIn, purchaseQueue.currencies);
-
-          m1.makeChange(totalIn, function(err, coinsDispensed, totalChange){
-            res.send({data:coinsDispensed, totalChange:totalChange});
-          });
-        }
-      });
-    });
-  });
-};
-*/

@@ -2,6 +2,8 @@
 
   'use strict';
 
+  var Machine = {};
+
   var Currency = {
     denominations : {},
     slotsLeft : {}
@@ -17,10 +19,15 @@
 
   function initialize(){
     $(document).foundation();
+    initializeMachine();
     initializeCurrency();
     initializePurchaseQueue();
     loadWallet();
     defineEventHandlers();
+  }
+
+  function initializeMachine(){
+    Machine.price = parseFloat($($('#machine')[0]).attr('data-price'));
   }
 
   function initializeCurrency(){
@@ -71,7 +78,7 @@
     // Determine if there is sufficient space in machine to add a given coin or bill and that the user has sufficient money in wallet.
     // Adjust coin count display.
     var walletCount = getWalletCount(type);
-    if(bankHasOverhead(type) && walletCount > 0){
+    if(bankHasOverhead(type) && walletCount > 0 && !isSuperflous()){
       adjustWalletCount(type, -1);
       incrementPurchaseQueue(type);
       adjustCoinDisplay(PurchaseQueue.value);
@@ -82,6 +89,8 @@
       }
     } else if(!bankHasOverhead(type)){
       adjustCoinDisplay(type + ' slot full');
+    } else if(isSuperflous){
+      adjustCoinDisplay('make selection');
     }
 
     // Determines if there is sufficient space for a given denomination, different rules apply to paper bills
@@ -91,6 +100,16 @@
       }
       var overhead = Currency.slotsLeft[type].count;
       if(overhead >= 1){
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    // Sets a limit on how much money can be put into queue.
+    // Prevents users from inserting, say, 100 dollars and depleting the bank of change.
+    function isSuperflous(){
+      if(PurchaseQueue.value >= Machine.price){
         return true;
       } else {
         return false;
