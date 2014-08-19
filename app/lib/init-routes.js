@@ -27,7 +27,7 @@ function load(app, fn){
   app.post('/beverageTypes/update', d, beverageTypes.update);
   app.post('/machines/create', d, machines.create);
   app.post('/machines/update/:id', d, machines.update);
-  //app.post('/machines/make-change', d, machines.makeChange);
+  app.post('/machines/make-purchase', d, machines.makePurchase);
   app.post('/machines/return-coins', d, machines.returnCoins);
   app.post('/beverageTypes/create', d, beverageTypes.create);
   app.post('/currencies/update', d, currencies.update);

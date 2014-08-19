@@ -13,10 +13,10 @@ block content
         .row
           .small-8.columns
             each beverage in beverageTypes
-              .beverageLogo(style="background-image: url(" + beverage.image + ");", data-name=beverage.name, data-id=beverage._id.toString(),
+              .beverage-logo(style="background-image: url(" + beverage.image + ");", data-name=beverage.name, data-id=beverage._id.toString(),
               data-is-out=beverage.isOut)
                 if beverage.isOut
-                  h5 It's out
+                  .beverage-empty
           .small-4.columns
             #coin-display
                 strong#coin-count= coinCount
@@ -24,6 +24,8 @@ block content
                 strong#coin-display-price= machine.price
             .clear
             img#coin-return(src='/img/coin-return.png')
+            .clear
+            #dispense-slot
         .row
           .small-12.columns.wallet
             .row

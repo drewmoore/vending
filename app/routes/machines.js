@@ -146,6 +146,13 @@ exports.returnCoins = function(req, res){
   });
 };
 
+exports.makePurchase = function(req, res){
+
+  console.log('MAKE PURCHASE: ');
+
+  res.send('Makin purchases yo!');
+};
+
 exports.getStateOfMachine = function(req, fn) {
   Machine.index(function(records){
     if(records.length > 0){

@@ -50,7 +50,7 @@ strong {
   background-color: rgba(20, 20, 20, .9);
 }
 
-.beverageLogo {
+.beverage-logo {
   min-height: 7em;
   min-width: 14em;
   max-width: 25%;
@@ -59,6 +59,15 @@ strong {
   vertical-align: top;
   position: relative;
   background-size: 100% 100%;
+}
+
+.beverage-empty {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  min-width: 100%;
+  min-height: 100%;
+  background-color: rgba(20, 20, 20, .9);
 }
 
 #coin-display {
@@ -80,6 +89,18 @@ strong {
 #coin-return {
   float: right;
   max-width: 7em;
+}
+
+#dispense-slot {
+  background-color: rgba(20, 20, 20, .7);
+  min-height: 8.5em;
+  text-align: center;
+  margin: 1em 1em;
+  padding: 1em;
+}
+
+#dispense-slot > img {
+  max-height: 7em;
 }
 
 .wallet {

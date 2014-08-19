@@ -27,7 +27,11 @@
   }
 
   function initializeMachine(){
-    Machine.price = parseFloat($($('#machine')[0]).attr('data-price'));
+    var $machineDiv = $($('#machine')[0]);
+    Machine.price = parseFloat($machineDiv.attr('data-price'));
+    Machine.inService = $machineDiv.attr('data-in-service');
+    Machine.hasChange = $machineDiv.attr('data-has-change');
+    Machine.hasOverheadInBank = $machineDiv.attr('data-has-overhead-in-bank');
   }
 
   function initializeCurrency(){
@@ -68,14 +72,18 @@
   }
 
   function defineEventHandlers(){
-    $('.currency').click(currencyClick);
-    $('#coin-return').click(coinReturnClick);
+    if(Machine.inService !== undefined){
+      $('.currency').click(currencyClick);
+      $('#coin-return').click(coinReturnClick);
+      $('.beverage-logo').click(beverageLogoClick);
+    } else {
+      adjustCoinDisplay('out of service');
+    }
   }
 
   function currencyClick(){
     var self = this;
     var type = $(self).attr('data-type');
-
     // Determine if there is sufficient space in machine to add a given coin or bill and that the user has sufficient money in wallet.
     // Adjust coin count display.
     var walletCount = getWalletCount(type);
@@ -126,6 +134,42 @@
   function coinReturnClick(){
     var url = '/machines/return-coins/';
     $.ajax({url:url, type:'post', data: PurchaseQueue, success:getChange});
+  }
+
+  function beverageLogoClick(){
+    var self = this;
+    if($(self).attr('data-is-out') === undefined){
+      if(PurchaseQueue.value >= Machine.price){
+        var id = $(self).attr('data-id');
+        var image = $(self).attr('style').split('(')[1].split(')')[0];
+        makePurchase(id, image);
+      } else {
+        adjustCoinDisplay('insert money');
+      }
+    } else {
+      adjustCoinDisplay('sold out');
+    }
+  }
+
+  function makePurchase(beverageTypeId, image){
+    var $dispenseSlot = $($('#dispense-slot')[0]);
+    var $imageElement = $('<img>');
+    var url = '/machines/make-purchase/';
+
+    //$.ajax({url:url, type:'post', data: PurchaseQueue, success:getChange});
+    $.ajax({url:url, type:'post', data: PurchaseQueue, success:function(incoming){
+
+      console.log(incoming);
+
+    }});
+
+
+    $imageElement.attr('src', image);
+    $dispenseSlot.append($imageElement);
+    adjustCoinDisplay('vending');
+
+    console.log('makePurchase', beverageTypeId);
+
   }
 
   function isPaper(type){
