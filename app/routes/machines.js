@@ -154,13 +154,15 @@ exports.makePurchase = function(req, res){
   var machineId = purchaseQueue.machineId;
   var beverageTypeId = purchaseQueue.beverageTypeId;
   var m1;
-  var currencyIn = [];
+
+  //var currencyIn = [];
+
   Machine.findById(machineId, function(machine){
     m1 = new Machine(machine.price);
     BeverageType.findById(beverageTypeId, function(err, beverageType){
 
       //var currencyIn = [{'type': 'dollarBill', 'quantity': 1}]
-
+      /*
       _.each(types, function(type){
         var c = {};
         c.type = type;
@@ -170,7 +172,14 @@ exports.makePurchase = function(req, res){
         }
       });
 
-      m1.vend(beverageType.name, currencyIn, function(vendErr, vended){
+      console.log('\n \n MAKE PURCHASE CURRENCY IN: ', currencyIn, '\n \n');
+
+      */
+
+      console.log('\n \n MAKE PURCHASE CURRENCY IN: ', purchaseQueue, '\n \n');
+
+
+      m1.vend(beverageType.name, purchaseQueue, function(vendErr, vended){
 
         self.getStateOfMachine(req, function(stateOfMachine, err){
 
@@ -257,7 +266,7 @@ exports.getStateOfMachine = function(req, fn) {
                         if(overheadValue < machine.price){
                           machine.hasOverheadInBank = false;
                         }
-                        if(!machine.hasChange && !machine.hasOverheadInBank){
+                        if(!machine.hasChange || !machine.hasOverheadInBank){
                           machine.inService = false;
                         }
                         fn({machine:machine, beverageTypes:beverageTypes, slotsLeft:slotsLeft,

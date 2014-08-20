@@ -208,14 +208,30 @@ Machine.prototype.vend = function(beverageType, currencyIn, fn){
   var self = this;
   var vended = {};
   var currencies = [];
+  var currencyInTotal = currencyIn.value - 0;
+
+  /*
   var currencyInTotal = 0;
   _.each(currencyIn, function(currency){
     var c = new Currency(currency.type);
     currencies.push(c);
     currencyInTotal += c.value;
   });
+  */
+  _.each(Currency.denominationsAccepted, function(denom){
+    var quantity = currencyIn[denom];
+    for(var i=0; i<quantity; i++){
+      var c = new Currency(denom);
+      currencies.push(c);
+    }
+  });
+
+  console.log('\n \n MACHINE VEND: CURRENCYIn: ', currencyIn, currencies, currencyInTotal, '\n \n');
+
   Currency.insertMany(currencies, function(err, records){
+
     self.makeChange(currencyInTotal, function(err, coinsDispensed, totalChange){
+
       vended.coinsDispensed = coinsDispensed;
       vended.currencyInTotal = currencyInTotal;
       vended.totalChange = totalChange;

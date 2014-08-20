@@ -266,7 +266,10 @@ describe('Machine', function(){
       Beverage.stockNew('Cheerwine', 10, function(err, count){
         Currency.stockNewByType('dime', 2, function(err, count){
           Currency.stockNewByType('nickel', 3, function(err, count){
-            var currencyIn = [{'type': 'dollarBill', 'quantity': 1}];
+
+            //var currencyIn = [{'type': 'dollarBill', 'quantity': 1}];
+
+            var currencyIn = {currencies: {dollarBill: '1'}, value: '1'};
 
             m1.vend('Cheerwine', currencyIn, function(vendErr, vended){
 
