@@ -8,6 +8,8 @@ The database keeps count of all beverages, quantities of money by denomination, 
 purchase as well as records of the exact types and numbers of coins dispensed as change. The app starts of as a clean slate, allowing a user
 to add their own beverage products and corresponding logos as well as a front-panel image for the user interface. A user can change the number
 of beverages and currency denominations at any time, and the user can reset the transaction log as well.
+
+
 Vend It Up! uses the speed of Node's non-blocking, asyncronous mechanisms combined with the flexibility and ease of MongoDB. The front-end
 framework utilized is Zurb's Foundation.
 
@@ -32,12 +34,17 @@ What's that? You want more beverages to choose from? Well, you're in luck, becau
 the page. Simply click 'New Beverage,' and repeat the process from earlier. The machine has six slots for beverages and will return an error
 message if you attempt to add more. If you wish to change the quantity or logo image for a beverage or swap the beverage with a new one, click
 'Change Beverages' in the navigation bar.
+
+
 You can also edit the numbers of coins of a given denomination, empty all paper bills, and change the machine's front-panel image by clicking
 'Administer Machine.'
+
+
 Vend It Up! keeps detailed records of all transactions. If you simply wish to view a summary of the current state of the machine, click on
 'Summary' in the navigation bar. If you're not into the whole brevity thing, click on 'Records' to see a detailed transaction log with the
 values of all currency denominations in the machine. It will also break down the quantity of each beverage product that is stocked. You can
 peruse the detailed transaction history, or click a button to reset it.
+
 
 API Documentation
 -----------------
@@ -45,15 +52,18 @@ If you're the type that likes to pop open the hood and tinker around, here's a l
 To create a machine instance, post to `/machines/create`. The only data necessary are a `price` and `imageFile`. To edit the machine's price
 and image, post to `/machines/update/:id` with the id being the machine's database ID. Again, all that is needed is a `price` and `imageFile`.
 
+
 To add a new beverage product, post to `/beverageTypes/create` with a `name`, `quantity`, and `imageFile` as properties of the request body.
 If you want to swap a beverage product, change its image, or change its quantity, post to `/beverageTypes/update`. You will need to send a
 `beverageId`, which is the database ID for the beverage product. You can supply an optional `name` property if you want to swap out the beverage.
 The name provided will be the new product name for that slot. You can provide an optional `imageFile` if you wish to change the logo. A
 `quantity` is required, but it does not have to be different from the beverage's current quantity.
 
+
 If you wish to manage the level of change in the machine, you can post to `/currencies/update`. The request body must include a quantity for
 each denomination the machine accepts, i.e.: `nickel: 3`, `quarter: 20`, `dime: 0`, `dollarCoin: 0`, `dollarBill:0`, and `fiveDollarBill:2`.
 The quantity can be the same as the current quantity, but it must not be left undefined.
+
 
 To utilize the machine's 'coin return' button, which gives you change without vending a product, the route you would want is
 `/machines/return-coins`. The data to send is an object with it's properties being all currencies going in and their quantity. For example:
@@ -64,6 +74,7 @@ To utilize the machine's 'coin return' button, which gives you change without ve
 `totalChange: .5;`
 `stateOfMachine.inService: true;`
 
+
 To make a purchase, post to `/machines/make-purchase`. Include the `machineId` and `beverageTypeId` in the body, as well as the total `value` of all the money
 going in. Also inclue each currency and quantity. Examples:
 `machineId: 12345;`
@@ -71,6 +82,7 @@ going in. Also inclue each currency and quantity. Examples:
 `value: 1.25;`
 `quarter: 1;`
 `dollarCoin: 1;`
+
 
 Finally, if you wish to erase the transaction history, simply post to `/transactions/reset`.
 
