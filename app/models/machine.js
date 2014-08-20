@@ -87,7 +87,6 @@ Machine.prototype.canMakeChange = function(fn){
   var hasChange;
   var price = this.price;
   var highestCurrencyValue = 0;
-  var totalCount = 0;
   var types = Currency.denominationsAccepted;
   _.each(types, function(type){
     var c = new Currency(type);

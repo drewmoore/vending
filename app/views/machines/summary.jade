@@ -20,7 +20,7 @@ block content
             li
               strong Total Drinks in Inventory: #{beverageCount}
             li
-              strong Total Money in Bank: #{currencyTotal}
+              strong Total Money in Bank: #{'$ ' + currencyTotal.toFixed(2)}
             li
               if machine.inService
                 strong Machine is in Service

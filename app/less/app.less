@@ -24,6 +24,10 @@ strong {
   color: white;
 }
 
+table {
+  margin: 0px auto;
+}
+
 form {
   background-color: white;
   padding: 1em;
@@ -32,6 +36,11 @@ form {
 h5, th {
   text-align: center;
   color: @white;
+}
+
+button {
+  border-radius: 25px;
+  background-color: rgba(200, 30, 30, .9);
 }
 
 .clear {
@@ -171,6 +180,40 @@ h5, th {
   background-image: url('/img/nickel.png');
 }
 
+.thumb {
+  max-height: 1.5em;
+}
+
+#transaction-log {
+  text-align: center;
+  max-height: 20em;
+  overflow: auto;
+  margin: 2em auto;
+}
+
+#transaction-reset {
+  width: 10em;
+  height: 4em;
+}
+
+#transaction-log > table {
+  background-color: white;
+  margin: 0px auto;
+}
+
+.transaction-header {
+  text-align: center;
+  color: black;
+}
+
+#transaction-log > table > tbody > tr > td {
+  text-align: left;
+}
+
+#transaction-log > table > tbody > tr > td > strong {
+  color: rgba(5, 5, 5, .7);
+  margin: 0px 0.5em;
+}
 
 
 .error-space {

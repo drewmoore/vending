@@ -1,0 +1,69 @@
+extends ../shared/template
+block content
+
+  .row
+    .small-6.columns
+      h5 Beverages In Machine
+      table
+        thead
+          th
+          th Name
+          th Quantity
+        tbody
+
+          each beverageType in beverageTypes
+            tr
+              td
+                img.thumb(src=beverageType.image)
+              td
+                strong= beverageType.name
+              td
+                strong= beverageType.count
+    .small-6.columns
+      h5 Money In Machine
+      table
+        thead
+          th Denomination
+          th Total Value
+        tbody
+
+          each currencyType in currencyTypes
+            tr
+              td
+                strong= currencyType.type
+              td
+                strong= '$ ' + currencyType.total.toFixed(2)
+
+  .row
+    .small-12.columns#transaction-log
+      h5 Transaction History
+      button#transaction-reset Reset Transactions
+      table
+        thead
+          th.transaction-header Time/Date
+          th.transaction-header Beverage Purchased
+          th.transaction-header Change Dispensed
+        tbody
+
+          each transaction in transactions
+            tr
+              td
+                strong= transaction.time.toString().split('GMT')[0]
+              td
+                strong= transaction.beverageType
+              td
+                strong= '$ ' + transaction.totalChange.toFixed(2)
+                each coin in transaction.coinsDispensed
+                  strong= coin.name + ':'
+                  strong= coin.count
+      
+      
+
+
+
+
+
+
+
+
+

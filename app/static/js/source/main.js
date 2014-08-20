@@ -79,6 +79,7 @@
     } else {
       adjustCoinDisplay('out of service');
     }
+    $('#transaction-reset').click(resetTransactions);
   }
 
   function currencyClick(){
@@ -272,6 +273,15 @@
     _.each(data.stateOfMachine.slotsLeft, function(denom){
       Currency.slotsLeft[denom.type].count = denom.overhead;
     });
+  }
+
+  function resetTransactions(){
+    var url = '/transactions/reset/';
+    $.ajax({url:url, type:'post', success:transactionsReset});
+  }
+
+  function transactionsReset(data){
+    $('#transaction-log > table > tbody').empty();
   }
 
 })();
