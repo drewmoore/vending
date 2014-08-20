@@ -18,7 +18,7 @@ Beverage.prototype.insert = function(fn){
         fn(err, records);
       });
     } else {
-      fn('That beverage is already in here, yo!');
+      fn('That beverage is already in the database.');
     }
   });
 };

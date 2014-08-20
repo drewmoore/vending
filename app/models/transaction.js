@@ -28,7 +28,7 @@ Transaction.prototype.insert = function(fn){
         fn(err, records);
       });
     } else {
-      fn('That transaction is already in here, yo!');
+      fn('That transaction is already in the database.');
     }
   });
 };

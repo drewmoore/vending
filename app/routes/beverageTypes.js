@@ -5,13 +5,6 @@ var Beverage = require('../models/beverage');
 var Machine = require('../models/machine');
 var _ = require('lodash');
 
-/*
-exports.index = function(req, res){
-  BeverageType.index(function(beverageTypes){
-    res.render('beverageTypes/index', {beverageTypes:beverageTypes});
-  });
-};
-*/
 
 exports.createPage = function(req, res){
   Machine.index(function(records){
@@ -112,34 +105,3 @@ exports.update = function(req, res){
     res.redirect('beverageTypes/edit');
   }
 };
-
-/*
-exports.update = function(req, res){
-  var bt1 = new BeverageType(req.body.beverageType || req.body);
-  var imageFile = req.body.imageFile || req.files.imageFile.path;
-  bt1._id = new Mongo.ObjectID(req.params.id);
-  bt1.addImage(imageFile, function(err){
-    bt1.update(function(record){
-      res.redirect('/beverageTypes/' + req.params.id);
-    });
-  });
-};
-
-exports.remove = function(req, res){
-  BeverageType.destroy(req.params.id, function(err, count){
-    res.redirect('/beverageTypes');
-  });
-};
-
-exports.show = function(req, res){
-  User.findById(req.session.userId, function(err, user){
-    BeverageType.findById(req.params.id, function(beverageType){
-      if(beverageType){
-        res.render('beverageTypes/show', {title:'Sample Model Show', beverageType:beverageType, user:user});
-      } else {
-        res.render('beverageTypes/', {title:'Sample Models', err:'beverageType not found', user:user});
-      }
-    });
-  });
-};
-*/

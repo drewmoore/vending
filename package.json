@@ -1,8 +1,8 @@
 {
-  "name": "nodeTemplate",
+  "name": "vending",
   "repository" : {
     "type" : "git",
-    "url"  : "http://github.com/drewmoore/nodeTemplate.git"
+    "url"  : "http://github.com/drewmoore/vending.git"
   },
   "version": "0.0.1",
   "bin": {"coveralls" : "./node_modules/coveralls/bin/coveralls.js"},
@@ -18,13 +18,11 @@
     "lodash":          "*",
     "moment":          "*",
     "mongodb":         "*",
-    "bcrypt":          "*",
     "connect-redis":   "*",
     "jade":            "*",
     "express-less":    "*",
     "request":         "*",
-    "express-session": "*",
-    "asyncjs":         "*"
+    "express-session": "*"
   },
   "devDependencies": {
     "grunt":                "*",

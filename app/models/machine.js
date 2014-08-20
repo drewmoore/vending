@@ -35,7 +35,7 @@ Machine.prototype.insert = function(fn){
         fn(err, records);
       });
     } else {
-      fn('That machine is already in here, yo!');
+      fn('That machine is already in the database.');
     }
   });
 };
@@ -107,13 +107,7 @@ Machine.prototype.canMakeChange = function(fn){
 
 Machine.prototype.makeChange = function(moneyIn, fn){
   var price = this.price;
-
-  //      totalChange = ( ( Math.round(totalChange * 100) + Math.round(type.value * 100) )/ 100);
-
   var changeNeeded = (Math.round(moneyIn * 100) - Math.round(price * 100)) / 100;
-
-  //var moneyOut = 0;
-
   var coinsDispensed = {};
   var totalChange = 0.00;
   var currencies = [];
@@ -124,21 +118,15 @@ Machine.prototype.makeChange = function(moneyIn, fn){
     }
   });
   var types = _.sortBy(currencies, 'value').reverse();
-
   _.each(types, function(type){
     coinsDispensed[type.type] = {};
     coinsDispensed[type.type].name = type.type;
     coinsDispensed[type.type].count = 0;
   });
-
-  console.log('MODEL MAKE CHANGE: ', moneyIn, price, changeNeeded, types);
-
   var iterator = 0;
-
   getTotalsByType();
 
   function getTotalsByType(){
-
     // Iterate through the different coin denominations. Check if there are enough in machine to make change.
     // If there is not enough to make change, call function again recursively to test the next coin denomination.
     // If there is enough to make change, call a function that will dispense a given coin one at a time until the amount of change needed
@@ -146,14 +134,8 @@ Machine.prototype.makeChange = function(moneyIn, fn){
     var type = types[iterator];
     Currency.totalByType(type.type, function(err, totalByType){
       coinsDispensed[type.type].count = 0;
-
       if((totalByType >= type.value) && (type.value <= changeNeeded)){
-
-        console.log('MODEL MAKE CHANGE: GET TOTALS BY TYPE: ', type.type, totalByType, type.value, changeNeeded);
-
-
         dispenseCoins(type, totalByType, function(err){
-
           iterator ++;
           if((iterator === types.length) || (totalChange >= changeNeeded)){
             fn(err, coinsDispensed, totalChange);
@@ -173,27 +155,15 @@ Machine.prototype.makeChange = function(moneyIn, fn){
     });
   }
 
+  // Call itself recursively until the necessary number of coins of a given denomination are dispensed.
   function dispenseCoins(type, totalByType, dispenseCallBack){
-
-    console.log('MODEL MAKE CHANGE: GET TOTALS BY TYPE: DISPENSE COINS: ', type, totalByType);
-
     Currency.dispenseOneByType(type.type, function(err, count){
-
-      console.log('MODEL MAKE CHANGE: GET TOTALS BY TYPE: DISPENSE COINS: DISPENSE ONE BY TYPE: ', type.type, err, count);
-
       if(err){
         dispenseCallBack(err);
       } else {
         coinsDispensed[type.type].count ++;
-
         totalChange = ( ( Math.round(totalChange * 100) + Math.round(type.value * 100) )/ 100);
-
-        console.log('MODEL MAKE CHANGE: GET TOTALS BY TYPE: DISPENSE COINS: DISPENSE ONE BY TYPE: ELSE: ', coinsDispensed[type.type], totalChange, changeNeeded);
-
         totalByType -= type.value;
-
-        console.log('\n \n  IS THIS THE SMOKING GUN?: ', changeNeeded, totalChange, (changeNeeded - totalChange),'\n \n');
-
         if(totalChange >= changeNeeded || (((changeNeeded * 100) - Math.round(totalChange * 100)) / 100) < type.value){
           dispenseCallBack(err);
         } else {
@@ -210,14 +180,6 @@ Machine.prototype.vend = function(beverageType, currencyIn, fn){
   var currencies = [];
   var currencyInTotal = currencyIn.value - 0;
 
-  /*
-  var currencyInTotal = 0;
-  _.each(currencyIn, function(currency){
-    var c = new Currency(currency.type);
-    currencies.push(c);
-    currencyInTotal += c.value;
-  });
-  */
   _.each(Currency.denominationsAccepted, function(denom){
     var quantity = currencyIn[denom];
     for(var i=0; i<quantity; i++){
@@ -225,13 +187,8 @@ Machine.prototype.vend = function(beverageType, currencyIn, fn){
       currencies.push(c);
     }
   });
-
-  console.log('\n \n MACHINE VEND: CURRENCYIn: ', currencyIn, currencies, currencyInTotal, '\n \n');
-
   Currency.insertMany(currencies, function(err, records){
-
     self.makeChange(currencyInTotal, function(err, coinsDispensed, totalChange){
-
       vended.coinsDispensed = coinsDispensed;
       vended.currencyInTotal = currencyInTotal;
       vended.totalChange = totalChange;

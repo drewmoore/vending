@@ -150,49 +150,17 @@ exports.returnCoins = function(req, res){
 
 exports.makePurchase = function(req, res){
   var purchaseQueue = req.body;
-  var types = Currency.denominationsAccepted;
   var machineId = purchaseQueue.machineId;
   var beverageTypeId = purchaseQueue.beverageTypeId;
   var m1;
 
-  //var currencyIn = [];
-
   Machine.findById(machineId, function(machine){
     m1 = new Machine(machine.price);
     BeverageType.findById(beverageTypeId, function(err, beverageType){
-
-      //var currencyIn = [{'type': 'dollarBill', 'quantity': 1}]
-      /*
-      _.each(types, function(type){
-        var c = {};
-        c.type = type;
-        c.quantity = purchaseQueue.currencies[type];
-        if(c.quantity > 0){
-          currencyIn.push(c);
-        }
-      });
-
-      console.log('\n \n MAKE PURCHASE CURRENCY IN: ', currencyIn, '\n \n');
-
-      */
-
-      console.log('\n \n MAKE PURCHASE CURRENCY IN: ', purchaseQueue, '\n \n');
-
-
       m1.vend(beverageType.name, purchaseQueue, function(vendErr, vended){
-
         self.getStateOfMachine(req, function(stateOfMachine, err){
-
-
-
-
-          console.log('MAKE PURCHASE: ', purchaseQueue, stateOfMachine);
-
           res.send({vended:vended, stateOfMachine:stateOfMachine});
-
-
         });
-
       });
     });
   });
