@@ -136,9 +136,6 @@ exports.returnCoins = function(req, res){
         m1.makeChange(totalIn, function(err, coinsDispensed, totalChange){
           self.getStateOfMachine(req, function(data, err){
 
-
-            console.log('RETURN COINS: GET STATE OF MACHINE CALLBACK: ', data, '\n', totalChange);
-
             res.send({coinsDispensed:coinsDispensed, totalChange:totalChange, stateOfMachine:data});
 
           });
