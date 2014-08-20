@@ -155,21 +155,67 @@
     var $dispenseSlot = $($('#dispense-slot')[0]);
     var $imageElement = $('<img>');
     var url = '/machines/make-purchase/';
-
     PurchaseQueue.beverageTypeId = beverageTypeId;
-    //$.ajax({url:url, type:'post', data: PurchaseQueue, success:getChange});
-    $.ajax({url:url, type:'post', data: PurchaseQueue, success:function(incoming){
 
-      console.log(incoming);
+    $.ajax({url:url, type:'post', data: PurchaseQueue, success:receivePurchase});
 
-    }});
+    initializePurchaseQueue();
 
+    console.log('purchaseQueue: ', PurchaseQueue);
 
     $imageElement.attr('src', image);
-    $dispenseSlot.append($imageElement);
+    $dispenseSlot.prepend($imageElement);
     adjustCoinDisplay('vending');
+  }
 
-    console.log('makePurchase', beverageTypeId);
+  function receivePurchase(data){
+
+    _.each(data.stateOfMachine.beverageTypes, function(bevType){
+      if(bevType.isOut){
+        var id = bevType._id.toString();
+        var $bevDiv = $('.beverage-logo[data-id="' + id + '"]');
+        var $bevOut = $('<div>');
+        if($bevDiv.attr('data-is-out') === undefined) {
+          $bevOut.addClass('beverage-empty');
+          $bevDiv.attr('data-is-out', '');
+          $bevDiv.append($bevOut);
+        }
+      }
+    });
+    Machine = data.stateOfMachine.machine;
+    _.each(data.stateOfMachine.slotsLeft, function(denom){
+      if(isPaper(denom.type)){
+        denom.type = 'paperBill';
+      }
+      Currency.slotsLeft[denom.type].count = denom.overhead;
+    });
+
+    // getChange(data.vended);
+
+    _.each(data.vended.coinsDispensed, function(denom){
+      adjustWalletCount(denom.name, denom.count);
+    });
+    initializePurchaseQueue();
+    adjustCoinDisplay(0);
+    _.each(data.stateOfMachine.slotsLeft, function(denom){
+      Currency.slotsLeft[denom.type].count = denom.overhead;
+    });
+
+    if(!Machine.inService){
+      adjustCoinDisplay('out of service');
+      $('.beverage-logo').unbind('click');
+      $('.currency').unbind('click');
+      $('#coin-return').unbind('click');
+    }
+
+
+    console.log('receivePurchase: data', data);
+
+
+    console.log('receivePurchase, Machine', Machine);
+
+    console.log('receivePurchase, Currency', Currency);
+
 
   }
 
@@ -218,9 +264,6 @@
   }
 
   function getChange(data){
-
-    console.log('getChange: ', data);
-
     _.each(data.coinsDispensed, function(denom){
       adjustWalletCount(denom.name, denom.count);
     });
