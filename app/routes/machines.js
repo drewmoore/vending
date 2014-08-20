@@ -56,26 +56,28 @@ exports.create = function(req, res){
 exports.edit = function(req, res){
   Machine.findById(req.params.id, function(machine){
     var currencies = [];
+    var bills = [];
     var iteration = 0;
     var types = Currency.denominationsAccepted;
     _.each(types, function(type){
-      if(Currency.isPaper(type)){
-        iteration ++;
-        if(iteration === types.length){
-          res.render('machines/edit', {machine:machine, currencies:currencies});
-        }
-      } else {
-        var c = new Currency(type);
-        Currency.countByType(type, function(err, count){
-          c.count = count;
+      var c = new Currency(type);
+      Currency.countByType(type, function(err, count){
+        c.count = count;
+        if(Currency.isPaper(type)){
+          bills.push(c);
+          iteration ++;
+          if(iteration === types.length){
+            res.render('machines/edit', {machine:machine, currencies:currencies, bills:bills});
+          }
+        } else {
           c.limit = Currency.limit[type];
           currencies.push(c);
           iteration ++;
           if(iteration === types.length){
-            res.render('machines/edit', {machine:machine, currencies:currencies});
+            res.render('machines/edit', {machine:machine, currencies:currencies, bills:bills});
           }
-        });
-      }
+        }
+      });
     });
   });
 };
@@ -163,7 +165,9 @@ exports.makePurchase = function(req, res){
         var c = {};
         c.type = type;
         c.quantity = purchaseQueue.currencies[type];
-        currencyIn.push(c);
+        if(c.quantity > 0){
+          currencyIn.push(c);
+        }
       });
 
       m1.vend(beverageType.name, currencyIn, function(vendErr, vended){

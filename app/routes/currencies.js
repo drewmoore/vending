@@ -64,19 +64,13 @@ exports.edit = function(req, res){
 */
 
 exports.update = function(req, res){
-  var coinCurrencies = [];
   var iterator = 0;
-  _.each(Currency.denominationsAccepted, function(denom){
-    if(!Currency.isPaper(denom)){
-      coinCurrencies.push(denom);
-    }
-  });
-  _.each(coinCurrencies, function(type){
+  _.each(Currency.denominationsAccepted, function(type){
     var quantity = req.body[type];
     Currency.emptyByType(type, function(err, count){
       Currency.stockNewByType(type, quantity, function(err, count){
         iterator ++;
-        if(iterator === coinCurrencies.length){
+        if(iterator === Currency.denominationsAccepted.length){
           res.redirect('/');
         }
       });

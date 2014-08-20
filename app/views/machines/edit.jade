@@ -57,6 +57,12 @@ block content
                         else
                           option(value=coins)= coins
                     -  }
+              each bill in bills
+                .small-6.columns
+                  label= bill.type
+                  select(name=bill.type)
+                    option(selected)= bill.count
+                    option(value=0) 0
             .row
               .small-12.columns
                 button.right-button Update Change Bank
